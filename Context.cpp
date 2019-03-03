@@ -24,7 +24,7 @@ void Context::executeGroup(const GroupNode &groupNode)
         try
         {
             ArgIterator iter(i, end);
-            std::shared_ptr<Node> resultNode = i->get()->execute(*this, iter);
+            std::shared_ptr<Node> resultNode = i->get()->execute(iter);
         }
         catch (Error e)
         {
@@ -44,7 +44,7 @@ std::shared_ptr<GroupNode> Context::evaluateGroup(const GroupNode &groupNode)
         try
         {
             ArgIterator tmp(i, end);
-            std::shared_ptr<Node> resultNode = i->get()->getValue(*this, tmp);
+            std::shared_ptr<Node> resultNode = i->get()->getValue(tmp);
             newGroupNode->nodes.push_back(resultNode);
         }
         catch (Error e)

@@ -2,7 +2,7 @@
 
 namespace pfx
 {
-    class Context;
+    using NodeRef = std::shared_ptr<Node>;
 
     struct Node
     {
@@ -34,12 +34,12 @@ namespace pfx
 
         virtual void dumpPart(int /*indent*/) { printf("No dump for this node.\n"); }
 
-        virtual std::shared_ptr<Node> execute(Context& /*hContext*/, ArgIterator& /*hIter*/)
+        virtual std::shared_ptr<Node> execute(ArgIterator& /*hIter*/)
         {
             throw error::NonExecutableNode(start);
         }
 
-        virtual std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) = 0;
+        virtual std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) = 0;
 
         virtual std::string toString() = 0;
         virtual int toInteger() = 0;
@@ -65,7 +65,7 @@ namespace pfx
         int toInteger() override { return value; }
         double toDouble() override { return value; }
 
-        std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) override
+        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
         {
             return std::make_shared<IntegerNode>(*this);
         }
@@ -101,7 +101,7 @@ namespace pfx
         int toInteger() override { return value; }
         double toDouble() override { return value; }
 
-        std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) override
+        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
         {
             return std::make_shared<FloatNode>(*this);
         }
@@ -146,9 +146,9 @@ namespace pfx
         int toInteger() override { return stringToInteger(prettyName); }
         double toDouble() override { return stringToDouble(prettyName); }
 
-        std::shared_ptr<Node> execute(Context& hContext, ArgIterator& hIter) override;
+        std::shared_ptr<Node> execute(ArgIterator& hIter) override;
 
-        std::shared_ptr<Node> getValue(Context& hContext, ArgIterator& hIter) override;
+        std::shared_ptr<Node> getValue(ArgIterator& hIter) override;
 
         virtual NodeType getType()
         {
@@ -180,7 +180,7 @@ namespace pfx
             printf("Quoted string: %s\n", value.c_str());
         }
 
-        std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) override
+        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
         {
             return std::make_shared<StringNode>(*this);
         }
@@ -216,7 +216,7 @@ namespace pfx
 
         void dumpPart(int indent) override;
 
-        std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) override
+        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
         {
             return std::make_shared<GroupNode>(*this);
         }
@@ -250,7 +250,7 @@ namespace pfx
             printf("Null\n");
         }
 
-        std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) override
+        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
         {
             return std::make_shared<NullNode>(*this);
         }

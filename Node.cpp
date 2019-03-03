@@ -11,14 +11,14 @@ namespace pfx
         return ssprintf("%g", value);
     }
 
-    std::shared_ptr<Node> CommandNode::execute(Context& hContext, ArgIterator& hIter)
+    std::shared_ptr<Node> CommandNode::execute(ArgIterator& hIter)
     {
         return command->execute(hIter);
     }
 
-    std::shared_ptr<Node> CommandNode::getValue(Context& hContext, ArgIterator& hIter)
+    std::shared_ptr<Node> CommandNode::getValue(ArgIterator& hIter)
     {
-        return execute(hContext, hIter);
+        return execute(hIter);
     }
 
     void GroupNode::dumpPart(int indent)

@@ -10,13 +10,18 @@ std::string Error::toString()
     return ssprintf("%s: %s", position.toString().c_str(), reason);
 }
 
-std::shared_ptr<Node> ArgIterator::next()
+std::shared_ptr<Node> ArgIterator::fetchNext()
 {
     if (current == end)
     {
         return NullNode::instance;
     }
     return *++current;
+}
+
+std::shared_ptr<Node> ArgIterator::evaluateNext()
+{
+    return fetchNext()->getValue(*this);
 }
 
 } // namespace pfx

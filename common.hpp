@@ -69,7 +69,8 @@ class ArgIterator
   public:
     ArgIterator(IteratorType& current, IteratorType end) : current(current), end(end) {}
 
-    std::shared_ptr<Node> next();
+    std::shared_ptr<Node> evaluateNext();
+    std::shared_ptr<Node> fetchNext();
 };
 
 struct Command
