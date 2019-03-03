@@ -2,6 +2,8 @@
 
 namespace pfx
 {
+    class Context;
+
     struct Node
     {
         Position start;
@@ -34,7 +36,7 @@ namespace pfx
 
         virtual std::shared_ptr<Node> execute(Context& /*hContext*/, ArgIterator& /*hIter*/)
         {
-            throw Error::NonExecutableNode;
+            throw error::NonExecutableNode(start);
         }
 
         virtual std::shared_ptr<Node> getValue(Context& /*hContext*/, ArgIterator& /*hIter*/) = 0;
@@ -155,12 +157,12 @@ namespace pfx
 
         int getPayloadSize() override
         {
-            throw Error::NotImplented;
+            throw error::NotImplemented(start);
         }
 
         std::string getPayload() override
         {
-            throw Error::NotImplented;
+            throw error::NotImplemented(start);
         }
     };
 
@@ -226,12 +228,12 @@ namespace pfx
 
         int getPayloadSize() override
         {
-            throw Error::InvalidOperation;
+            throw error::InvalidOperation(start);
         }
 
         std::string getPayload() override
         {
-            throw Error::InvalidOperation;
+            throw error::InvalidOperation(start);
         }
     };
 
@@ -240,6 +242,8 @@ namespace pfx
         std::string toString() override { return "null"; }
         int toInteger() override { return 0; }
         double toDouble() override { return 0; }
+
+        static std::shared_ptr<NullNode> instance;
 
         void dumpPart(int /*indent*/) override
         {
@@ -258,12 +262,12 @@ namespace pfx
 
         int getPayloadSize() override
         {
-            throw Error::InvalidOperation;
+            throw error::InvalidOperation(start);
         }
 
         std::string getPayload() override
         {
-            throw Error::InvalidOperation;
+            throw error::InvalidOperation(start);
         }
     };
 }

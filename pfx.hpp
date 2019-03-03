@@ -1,12 +1,12 @@
 #pragma once
 
-namespace pfx
-{
+#include <vector>
+#include <memory>
+#include <map>
+#include <fstream>
+#include <sstream>
 
-    class Context
-    {
-    public:
-
-    };
-}
-
+#include "common.hpp"
+#include "Input.hpp"
+#include "Node.hpp"
+#include "Context.hpp"
