@@ -1,4 +1,5 @@
 #include "pfx.hpp"
+#include "math.h"
 
 #include <memory>
 
@@ -10,7 +11,7 @@ struct PrintCommand : pfx::Command
 
         printf("%s", node->toString().c_str());
 
-        return std::make_shared<pfx::NullNode>();
+        return pfx::NullNode::instance;
     }
 };
 
@@ -22,7 +23,7 @@ struct PrintLnCommand : pfx::Command
 
         printf("%s\n", node->toString().c_str());
 
-        return std::make_shared<pfx::NullNode>();
+        return pfx::NullNode::instance;
     }
 };
 
@@ -74,6 +75,80 @@ struct SubCommand : pfx::Command
     }
 };
 
+struct MultiplyCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef arg1 = iter.evaluateNext();
+        pfx::NodeRef arg2 = iter.evaluateNext();
+
+        if (arg1->getType() != arg2->getType())
+        {
+            return pfx::NullNode::instance;
+        }
+
+        switch (arg1->getType())
+        {
+        case pfx::NodeType::Integer:
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() * arg2->toInteger());
+        case pfx::NodeType::FloatingPoint:
+            return std::make_shared<pfx::FloatNode>(arg1->toDouble() * arg2->toDouble());
+        default:
+            return pfx::NullNode::instance;
+        }
+    }
+};
+
+struct DivideCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef arg1 = iter.evaluateNext();
+        pfx::NodeRef arg2 = iter.evaluateNext();
+
+        if (arg1->getType() != arg2->getType())
+        {
+            return pfx::NullNode::instance;
+        }
+
+        switch (arg1->getType())
+        {
+        case pfx::NodeType::Integer:
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() / arg2->toInteger());
+        case pfx::NodeType::FloatingPoint:
+            return std::make_shared<pfx::FloatNode>(arg1->toDouble() / arg2->toDouble());
+        default:
+            return pfx::NullNode::instance;
+        }
+    }
+};
+
+struct LessCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef arg1 = iter.evaluateNext();
+        pfx::NodeRef arg2 = iter.evaluateNext();
+
+        if (arg1->getType() != arg2->getType())
+        {
+            return pfx::NullNode::instance;
+        }
+
+        switch (arg1->getType())
+        {
+        case pfx::NodeType::Integer:
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() < arg2->toInteger());
+        case pfx::NodeType::FloatingPoint:
+            return std::make_shared<pfx::IntegerNode>(arg1->toDouble() < arg2->toDouble());
+        case pfx::NodeType::String:
+            return std::make_shared<pfx::IntegerNode>(arg1->toString() < arg2->toString());
+        default:
+            return pfx::NullNode::instance;
+        }
+    }
+};
+
 struct ToIntCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
@@ -118,6 +193,73 @@ struct ListCommand : pfx::Command
     }
 };
 
+struct LetCommand : pfx::Command
+{
+    pfx::Context *ctx;
+
+    struct NodeCommand : pfx::Command
+    {
+        pfx::NodeRef ref;
+
+        NodeCommand(pfx::NodeRef ref) : ref(ref) {}
+
+        pfx::NodeRef execute(pfx::ArgIterator &) override
+        {
+            return ref;
+        }
+    };
+
+    LetCommand(pfx::Context *ctx) : ctx(ctx) {}
+
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef arg1 = iter.fetchNext();
+        pfx::NodeRef arg2 = iter.evaluateNext();
+
+        ctx->registerCommand(arg1->toString(), std::make_shared<NodeCommand>(arg2));
+
+        return pfx::NullNode::instance;
+    }
+};
+
+struct SqrtCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef arg = iter.evaluateNext();
+
+        return std::make_shared<pfx::FloatNode>(sqrt(arg->toDouble()));
+    }
+};
+
+struct WhileCommand : pfx::Command
+{
+    pfx::Context *ctx;
+
+    WhileCommand(pfx::Context *ctx) : ctx(ctx) {}
+
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef conditionNode = iter.evaluateNext();
+        pfx::NodeRef statementNode = iter.evaluateNext();
+
+        pfx::GroupNode *condition = dynamic_cast<pfx::GroupNode *>(conditionNode.get());
+        pfx::GroupNode *statement = dynamic_cast<pfx::GroupNode *>(statementNode.get());
+
+        if (!condition || !statement || !condition->nodes.size())
+        {
+            return pfx::NullNode::instance;
+        }
+
+        while (ctx->executeGroup(*condition)->toInteger())
+        {
+            ctx->executeGroup(*statement);
+        }
+
+        return pfx::NullNode::instance;
+    }
+};
+
 int main()
 {
     try
@@ -128,12 +270,24 @@ int main()
 
         ctx.registerCommand("print", std::make_shared<PrintCommand>());
         ctx.registerCommand("println", std::make_shared<PrintLnCommand>());
+
         ctx.registerCommand("int", std::make_shared<ToIntCommand>());
         ctx.registerCommand("float", std::make_shared<ToFloatCommand>());
         ctx.registerCommand("string", std::make_shared<ToStringCommand>());
+
         ctx.registerCommand("list", std::make_shared<ListCommand>(&ctx));
+
+        ctx.registerCommand("while", std::make_shared<WhileCommand>(&ctx));
+
         ctx.registerCommand("+", std::make_shared<AddCommand>());
         ctx.registerCommand("-", std::make_shared<SubCommand>());
+        ctx.registerCommand("*", std::make_shared<MultiplyCommand>());
+        ctx.registerCommand("/", std::make_shared<DivideCommand>());
+        ctx.registerCommand("sqrt", std::make_shared<SqrtCommand>());
+
+        ctx.registerCommand("<", std::make_shared<LessCommand>());
+
+        ctx.registerCommand("let", std::make_shared<LetCommand>(&ctx));
 
         std::shared_ptr<pfx::GroupNode> gn = ctx.compileCode(input, error);
         ctx.executeGroup(*gn);

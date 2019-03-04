@@ -5,5 +5,17 @@ println list ( "String addition: " + "foo" "bar" )
 println list ( "Convert to string second: " + "foo" string 2 )
 println list ( "Convert second to float: " + 2.0 float "3.14" )
 println list ( "Simple subtraction: " - 5 42 )
+println list ( "Multiply: " * 6 6 )
+println list ( "Divide: " / 42.0 3.3 )
 
+println list ( "Square root of 10: " sqrt 10 )
 
+let x 42
+println x
+
+let x 0
+while ( < x 10 )
+(
+    println list ( "x is: " x )
+    let x + x 1
+)

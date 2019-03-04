@@ -1,6 +1,6 @@
 namespace pfx
 {
-void Context::registerCommand(const char *name, std::shared_ptr<Command> command)
+void Context::registerCommand(std::string name, std::shared_ptr<Command> command)
 {
     auto iter = commands.find(name);
 
@@ -15,22 +15,24 @@ void Context::registerCommand(const char *name, std::shared_ptr<Command> command
     }
 }
 
-void Context::executeGroup(const GroupNode &groupNode)
+std::shared_ptr<Node> Context::executeGroup(const GroupNode &groupNode)
 {
     auto end = groupNode.nodes.end();
+    std::shared_ptr<Node> resultNode = NullNode::instance;
+
     for (auto i = groupNode.nodes.begin(); i != groupNode.nodes.end(); ++i)
     {
-        std::shared_ptr<Node> resultNode;
         try
         {
             ArgIterator iter(i, end);
-            std::shared_ptr<Node> resultNode = i->get()->execute(iter);
+            resultNode = i->get()->execute(iter);
         }
         catch (Error e)
         {
             throw;
         }
     }
+    return resultNode;
 }
 
 std::shared_ptr<GroupNode> Context::evaluateGroup(const GroupNode &groupNode)
@@ -54,6 +56,18 @@ std::shared_ptr<GroupNode> Context::evaluateGroup(const GroupNode &groupNode)
     }
     return newGroupNode;
 }
+
+struct UndefinedCommand : Command
+{
+    Position pos;
+
+    UndefinedCommand(Position pos) : pos(pos) {}
+
+    NodeRef execute(ArgIterator&) override
+    {
+        throw error::UndefinedCommand(pos);
+    }
+};
 
 std::shared_ptr<GroupNode> Context::compileCode(Input &input, Position &errorPosition)
 {
@@ -124,12 +138,12 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input, Position &errorPos
             std::shared_ptr<Node> newNode;
             if (cmd == commands.end())
             {
-                /*std::shared_ptr<CommandNode> cmdNode = std::make_shared<CommandNode>(PFX_CommandClosure{emptyCommand, "", nullptr, nullptr});
-                    newNode = cmdNode;
-                    commands[token.word] = cmdNode;*/
+                std::shared_ptr<CommandNode> tmp = std::make_shared<CommandNode>(std::make_shared<UndefinedCommand>(token.start), token.word);
+                commands[token.word] = tmp;
+                newNode = tmp;
 
-                printf("%s: %s is a string node.\n", token.start.toString().c_str(), token.word.c_str());
-                newNode = std::make_shared<StringNode>(token.word);
+                /*printf("%s: %s is a string node.\n", token.start.toString().c_str(), token.word.c_str());
+                newNode = std::make_shared<StringNode>(token.word);*/
             }
             else
             {

@@ -52,6 +52,6 @@ namespace pfx
         return strtod(str.c_str(), nullptr);
     }
 
-    std::shared_ptr<NullNode> NullNode::instance = std::make_shared<NullNode>();
+    std::shared_ptr<Node> NullNode::instance = std::make_shared<NullNode>();
 
 }

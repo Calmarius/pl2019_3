@@ -43,6 +43,7 @@ DECLARE_ERROR(NotImplemented, "This functionality is not implemented for this cl
 DECLARE_ERROR(InvalidOperation, "This operation shouldn't run on this class.")
 DECLARE_ERROR(ClosingBraceWithoutOpeningOne, "You have a ')' but not the corresponding (.");
 DECLARE_ERROR(ClosingBraceExpected, "For forgot to close a '('.");
+DECLARE_ERROR(UndefinedCommand, "This command is undefined.");
 
 #undef DECLARE_ERROR
 

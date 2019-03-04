@@ -243,7 +243,7 @@ namespace pfx
         int toInteger() override { return 0; }
         double toDouble() override { return 0; }
 
-        static std::shared_ptr<NullNode> instance;
+        static std::shared_ptr<Node> instance;
 
         void dumpPart(int /*indent*/) override
         {
