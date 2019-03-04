@@ -19,3 +19,6 @@ while ( < x 10 )
     println list ( "x is: " x )
     let x + x 1
 )
+
+let x readword
+println list ( "You read: " x )

@@ -1,6 +1,7 @@
 #include "pfx.hpp"
 #include "math.h"
 
+#include <stdio.h>
 #include <memory>
 
 struct PrintCommand : pfx::Command
@@ -193,10 +194,8 @@ struct ListCommand : pfx::Command
     }
 };
 
-struct LetCommand : pfx::Command
+void registerNodeCommand(pfx::Context *ctx, std::string name, pfx::NodeRef node)
 {
-    pfx::Context *ctx;
-
     struct NodeCommand : pfx::Command
     {
         pfx::NodeRef ref;
@@ -209,6 +208,13 @@ struct LetCommand : pfx::Command
         }
     };
 
+    ctx->registerCommand(name, std::make_shared<NodeCommand>(node));
+}
+
+struct LetCommand : pfx::Command
+{
+    pfx::Context *ctx;
+
     LetCommand(pfx::Context *ctx) : ctx(ctx) {}
 
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
@@ -216,7 +222,7 @@ struct LetCommand : pfx::Command
         pfx::NodeRef arg1 = iter.fetchNext();
         pfx::NodeRef arg2 = iter.evaluateNext();
 
-        ctx->registerCommand(arg1->toString(), std::make_shared<NodeCommand>(arg2));
+        registerNodeCommand(ctx, arg1->toString(), arg2);
 
         return pfx::NullNode::instance;
     }
@@ -260,6 +266,52 @@ struct WhileCommand : pfx::Command
     }
 };
 
+static bool isWhitespace(char c)
+{
+    return ((9 <= c) && (c <= 13)) || (c == ' ');
+}
+
+std::string readword()
+{
+    std::string word;
+
+    // Eat whitespace
+    while (!feof(stdin))
+    {
+        char c = fgetc(stdin);
+
+        if (!isWhitespace(c))
+        {
+            ungetc(c, stdin);
+            break;
+        }
+    }
+
+    // Get the characters.
+    while (!feof(stdin))
+    {
+        char c = fgetc(stdin);
+
+        if (isWhitespace(c))
+        {
+            ungetc(c, stdin);
+            break;
+        }
+
+        word.push_back(c);
+    }
+
+    return word;
+}
+
+struct ReadWordCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &) override
+    {
+        return std::make_shared<pfx::StringNode>(readword());
+    }
+};
+
 int main()
 {
     try
@@ -276,6 +328,8 @@ int main()
         ctx.registerCommand("string", std::make_shared<ToStringCommand>());
 
         ctx.registerCommand("list", std::make_shared<ListCommand>(&ctx));
+
+        ctx.registerCommand("readword", std::make_shared<ReadWordCommand>());
 
         ctx.registerCommand("while", std::make_shared<WhileCommand>(&ctx));
 
