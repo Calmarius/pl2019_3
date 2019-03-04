@@ -20,5 +20,5 @@ while ( < x 10 )
     let x + x 1
 )
 
-let x readword
+let x readline
 println list ( "You read: " x )

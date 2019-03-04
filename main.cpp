@@ -304,11 +304,37 @@ std::string readword()
     return word;
 }
 
+std::string readline()
+{
+    std::string line;
+
+    int c;
+    while ((c = fgetc(stdin)) != EOF)
+    {
+        if (c == '\n')
+        {
+            ungetc(c, stdin);
+            break;
+        }
+        line.push_back(c);
+    }
+
+    return line;
+}
+
 struct ReadWordCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &) override
     {
         return std::make_shared<pfx::StringNode>(readword());
+    }
+};
+
+struct ReadLineCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &) override
+    {
+        return std::make_shared<pfx::StringNode>(readline());
     }
 };
 
@@ -330,6 +356,7 @@ int main()
         ctx.registerCommand("list", std::make_shared<ListCommand>(&ctx));
 
         ctx.registerCommand("readword", std::make_shared<ReadWordCommand>());
+        ctx.registerCommand("readline", std::make_shared<ReadLineCommand>());
 
         ctx.registerCommand("while", std::make_shared<WhileCommand>(&ctx));
 
