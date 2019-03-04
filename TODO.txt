@@ -1,0 +1,5 @@
+Use pfx namespace and remove all those pfx::-s there are too many of them.
+
+Consider using the GroupNode::execute for executing the group instead of context.
+
+Perhaps move out even the register command stuff from the context.
