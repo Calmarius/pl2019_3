@@ -266,6 +266,34 @@ struct WhileCommand : pfx::Command
     }
 };
 
+struct IfCommand : pfx::Command
+{
+    pfx::Context *ctx;
+
+    IfCommand(pfx::Context *ctx) : ctx(ctx) {}
+
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef cond = iter.evaluateNext();
+        pfx::NodeRef thenPart = iter.evaluateNext();
+        pfx::NodeRef elsePart = iter.evaluateNext();
+
+        pfx::NodeRef &thePart = cond->toInteger() ? thenPart : elsePart;
+
+        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode*>(thePart.get());
+
+        if (gn)
+        {
+            return ctx->executeGroup(*gn);
+        }
+        else
+        {
+            return thePart;
+        }
+    }
+
+};
+
 static bool isWhitespace(char c)
 {
     return ((9 <= c) && (c <= 13)) || (c == ' ');
@@ -356,6 +384,7 @@ int main()
         ctx.registerCommand("readline", std::make_shared<ReadLineCommand>());
 
         ctx.registerCommand("while", std::make_shared<WhileCommand>(&ctx));
+        ctx.registerCommand("if", std::make_shared<IfCommand>(&ctx));
 
         ctx.registerCommand("+", std::make_shared<AddCommand>());
         ctx.registerCommand("-", std::make_shared<SubCommand>());
