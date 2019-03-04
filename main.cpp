@@ -276,10 +276,9 @@ std::string readword()
     std::string word;
 
     // Eat whitespace
-    while (!feof(stdin))
+    int c;
+    while ((c = fgetc(stdin)) != EOF)
     {
-        char c = fgetc(stdin);
-
         if (!isWhitespace(c))
         {
             ungetc(c, stdin);
@@ -288,10 +287,8 @@ std::string readword()
     }
 
     // Get the characters.
-    while (!feof(stdin))
+    while ((c = fgetc(stdin)) != EOF)
     {
-        char c = fgetc(stdin);
-
         if (isWhitespace(c))
         {
             ungetc(c, stdin);
