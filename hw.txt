@@ -1,3 +1,9 @@
 println "Hello World!"
-println + 2 2
+println list ( "Integer addition: " + 2 2 )
+println list ( "Float addition: " + 2.3 2.1 )
+println list ( "String addition: " + "foo" "bar" )
+println list ( "Convert to string second: " + "foo" string 2 )
+println list ( "Convert second to float: " + 2.0 float "3.14" )
+println list ( "Simple subtraction: " - 5 42 )
+
 
