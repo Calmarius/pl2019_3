@@ -182,10 +182,6 @@ struct ToStringCommand : pfx::Command
 
 struct ListCommand : pfx::Command
 {
-    pfx::Context *ctx;
-
-    ListCommand(pfx::Context *ctx) : ctx(ctx) {}
-
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
         pfx::NodeRef arg = iter.fetchNext();
@@ -244,10 +240,6 @@ struct SqrtCommand : pfx::Command
 
 struct WhileCommand : pfx::Command
 {
-    pfx::Context *ctx;
-
-    WhileCommand(pfx::Context *ctx) : ctx(ctx) {}
-
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
         pfx::NodeRef conditionNode = iter.fetchNext();
@@ -264,10 +256,6 @@ struct WhileCommand : pfx::Command
 
 struct IfCommand : pfx::Command
 {
-    pfx::Context *ctx;
-
-    IfCommand(pfx::Context *ctx) : ctx(ctx) {}
-
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
         pfx::NodeRef cond = iter.evaluateNext();
@@ -363,13 +351,13 @@ int main()
         ctx.registerCommand("float", std::make_shared<ToFloatCommand>());
         ctx.registerCommand("string", std::make_shared<ToStringCommand>());
 
-        ctx.registerCommand("list", std::make_shared<ListCommand>(&ctx));
+        ctx.registerCommand("list", std::make_shared<ListCommand>());
 
         ctx.registerCommand("readword", std::make_shared<ReadWordCommand>());
         ctx.registerCommand("readline", std::make_shared<ReadLineCommand>());
 
-        ctx.registerCommand("while", std::make_shared<WhileCommand>(&ctx));
-        ctx.registerCommand("if", std::make_shared<IfCommand>(&ctx));
+        ctx.registerCommand("while", std::make_shared<WhileCommand>());
+        ctx.registerCommand("if", std::make_shared<IfCommand>());
 
         ctx.registerCommand("+", std::make_shared<AddCommand>());
         ctx.registerCommand("-", std::make_shared<SubCommand>());
