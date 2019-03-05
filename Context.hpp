@@ -13,7 +13,7 @@ class Context
   std::map<std::string, std::shared_ptr<CommandNode>> commands;
 
 public:
-  void registerCommand(std::string name, std::shared_ptr<Command> command);
+  void setCommand(std::string name, std::shared_ptr<Command> command);
   std::shared_ptr<GroupNode> compileCode(Input &input);
 };
 } // namespace pfx

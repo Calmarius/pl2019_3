@@ -1,6 +1,6 @@
 namespace pfx
 {
-void Context::registerCommand(std::string name, std::shared_ptr<Command> command)
+void Context::setCommand(std::string name, std::shared_ptr<Command> command)
 {
     auto iter = commands.find(name);
 

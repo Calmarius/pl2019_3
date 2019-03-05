@@ -208,7 +208,7 @@ void registerNodeCommand(pfx::Context *ctx, std::string name, pfx::NodeRef node)
         }
     };
 
-    ctx->registerCommand(name, std::make_shared<NodeCommand>(node));
+    ctx->setCommand(name, std::make_shared<NodeCommand>(node));
 }
 
 struct LetCommand : pfx::Command
@@ -344,30 +344,30 @@ int main()
         pfx::Input input("hw.txt");
         pfx::Context ctx;
 
-        ctx.registerCommand("print", std::make_shared<PrintCommand>());
-        ctx.registerCommand("println", std::make_shared<PrintLnCommand>());
+        ctx.setCommand("print", std::make_shared<PrintCommand>());
+        ctx.setCommand("println", std::make_shared<PrintLnCommand>());
 
-        ctx.registerCommand("int", std::make_shared<ToIntCommand>());
-        ctx.registerCommand("float", std::make_shared<ToFloatCommand>());
-        ctx.registerCommand("string", std::make_shared<ToStringCommand>());
+        ctx.setCommand("int", std::make_shared<ToIntCommand>());
+        ctx.setCommand("float", std::make_shared<ToFloatCommand>());
+        ctx.setCommand("string", std::make_shared<ToStringCommand>());
 
-        ctx.registerCommand("list", std::make_shared<ListCommand>());
+        ctx.setCommand("list", std::make_shared<ListCommand>());
 
-        ctx.registerCommand("readword", std::make_shared<ReadWordCommand>());
-        ctx.registerCommand("readline", std::make_shared<ReadLineCommand>());
+        ctx.setCommand("readword", std::make_shared<ReadWordCommand>());
+        ctx.setCommand("readline", std::make_shared<ReadLineCommand>());
 
-        ctx.registerCommand("while", std::make_shared<WhileCommand>());
-        ctx.registerCommand("if", std::make_shared<IfCommand>());
+        ctx.setCommand("while", std::make_shared<WhileCommand>());
+        ctx.setCommand("if", std::make_shared<IfCommand>());
 
-        ctx.registerCommand("+", std::make_shared<AddCommand>());
-        ctx.registerCommand("-", std::make_shared<SubCommand>());
-        ctx.registerCommand("*", std::make_shared<MultiplyCommand>());
-        ctx.registerCommand("/", std::make_shared<DivideCommand>());
-        ctx.registerCommand("sqrt", std::make_shared<SqrtCommand>());
+        ctx.setCommand("+", std::make_shared<AddCommand>());
+        ctx.setCommand("-", std::make_shared<SubCommand>());
+        ctx.setCommand("*", std::make_shared<MultiplyCommand>());
+        ctx.setCommand("/", std::make_shared<DivideCommand>());
+        ctx.setCommand("sqrt", std::make_shared<SqrtCommand>());
 
-        ctx.registerCommand("<", std::make_shared<LessCommand>());
+        ctx.setCommand("<", std::make_shared<LessCommand>());
 
-        ctx.registerCommand("let", std::make_shared<LetCommand>(&ctx));
+        ctx.setCommand("let", std::make_shared<LetCommand>(&ctx));
 
         pfx::NodeRef gn = ctx.compileCode(input);
         gn->evaluate();
