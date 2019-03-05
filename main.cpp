@@ -190,9 +190,11 @@ struct ListCommand : pfx::Command
     {
         pfx::NodeRef arg = iter.fetchNext();
 
-        if (arg->getType() != pfx::NodeType::Group) return arg;
+        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode*>(arg.get());
 
-        return ctx->evaluateGroup(*dynamic_cast<pfx::GroupNode *>(arg.get()));
+        if (gn) return gn->evaluateAll();
+
+        return arg;
     }
 };
 

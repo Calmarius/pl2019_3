@@ -69,4 +69,18 @@ std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
     return resultNode;
 }
 
+std::shared_ptr<GroupNode> GroupNode::evaluateAll() const
+{
+    auto newGroupNode = std::make_shared<GroupNode>();
+
+    auto end = nodes.end();
+    for (auto i = nodes.begin(); i != end; ++i)
+    {
+        ArgIterator tmp(i, end);
+
+        newGroupNode->nodes.push_back(i->get()->evaluate(tmp));
+    }
+    return newGroupNode;
+}
+
 } // namespace pfx

@@ -180,6 +180,8 @@ struct GroupNode : Node
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
 
+    std::shared_ptr<GroupNode> evaluateAll() const;
+
     virtual NodeType getType()
     {
         return NodeType::Group;
@@ -210,4 +212,5 @@ struct NullNode : Node
         return NodeType::Null;
     };
 };
+
 } // namespace pfx

@@ -15,28 +15,6 @@ void Context::registerCommand(std::string name, std::shared_ptr<Command> command
     }
 }
 
-std::shared_ptr<GroupNode> Context::evaluateGroup(const GroupNode &groupNode)
-{
-    auto newGroupNode = std::make_shared<GroupNode>();
-
-    auto end = groupNode.nodes.end();
-    for (auto i = groupNode.nodes.begin(); i != end; ++i)
-    {
-        std::shared_ptr<Node> resultNode;
-        try
-        {
-            ArgIterator tmp(i, end);
-            std::shared_ptr<Node> resultNode = i->get()->evaluate(tmp);
-            newGroupNode->nodes.push_back(resultNode);
-        }
-        catch (Error e)
-        {
-            throw;
-        }
-    }
-    return newGroupNode;
-}
-
 struct UndefinedCommand : Command
 {
     Position pos;
