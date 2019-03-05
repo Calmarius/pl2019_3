@@ -2,248 +2,248 @@
 
 namespace pfx
 {
-    using NodeRef = std::shared_ptr<Node>;
+using NodeRef = std::shared_ptr<Node>;
 
-    struct Node
+struct Node
+{
+    Position start;
+    Position end;
+
+    Node()
     {
-        Position start;
-        Position end;
+    }
 
-        Node()
-        {
-        }
-
-        void setToken(Token t)
-        {
-            start = t.start;
-            end = t.end;
-        }
-
-        virtual ~Node() {}
-
-        void dumpIndent(int indent)
-        {
-            printf("%*s", indent * 4, "");
-        }
-
-        void dump(int indent = 0)
-        {
-            dumpIndent(indent);
-            dumpPart(indent);
-        }
-
-        virtual void dumpPart(int /*indent*/) { printf("No dump for this node.\n"); }
-
-        std::shared_ptr<Node> evaluate()
-        {
-            ArgIterator tmp;
-            return evaluate(tmp);
-        }
-
-        virtual std::shared_ptr<Node> evaluate(ArgIterator&) const = 0;
-
-        virtual std::shared_ptr<Node> execute(ArgIterator& /*hIter*/)
-        {
-            throw error::NonExecutableNode(start);
-        }
-
-        virtual std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) = 0;
-
-        virtual std::string toString() = 0;
-        virtual int toInteger() = 0;
-        virtual double toDouble() = 0;
-
-        virtual NodeType getType() = 0;
-    };
-
-    struct IntegerNode : Node
+    void setToken(Token t)
     {
-        using Node::evaluate;
+        start = t.start;
+        end = t.end;
+    }
 
-        const int value;
+    virtual ~Node() {}
 
-        IntegerNode(int value) : value(value) {}
-        void dumpPart(int /*indent*/) override
-        {
-            printf("Integer: %d\n", value);
-        }
-
-        std::string toString() override;
-        int toInteger() override { return value; }
-        double toDouble() override { return value; }
-
-        virtual std::shared_ptr<Node> evaluate(ArgIterator&) const override
-        {
-            return std::make_shared<IntegerNode>(*this);
-        }
-
-        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
-        {
-            return std::make_shared<IntegerNode>(*this);
-        }
-
-        NodeType getType() override
-        {
-            return NodeType::Integer;
-        };
-    };
-
-    struct FloatNode : Node
+    void dumpIndent(int indent)
     {
-        using Node::evaluate;
-        const double value;
+        printf("%*s", indent * 4, "");
+    }
 
-        FloatNode(double value) : value(value) {}
-
-        void dumpPart(int /*indent*/) override
-        {
-            printf("Float: %g\n", value);
-        }
-
-        std::string toString() override;
-        int toInteger() override { return value; }
-        double toDouble() override { return value; }
-
-        virtual std::shared_ptr<Node> evaluate(ArgIterator&) const override
-        {
-            return std::make_shared<FloatNode>(*this);
-        }
-
-        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
-        {
-            return std::make_shared<FloatNode>(*this);
-        }
-
-        virtual NodeType getType()
-        {
-            return NodeType::FloatingPoint;
-        };
-    };
-
-    int stringToInteger(const std::string &str);
-    double stringToDouble(const std::string &str);
-
-    struct CommandNode : Node
+    void dump(int indent = 0)
     {
-        using Node::evaluate;
-        std::shared_ptr<Command> command;
-        std::string prettyName;
+        dumpIndent(indent);
+        dumpPart(indent);
+    }
 
-        CommandNode(std::shared_ptr<Command> cmd) : command(cmd) {}
+    virtual void dumpPart(int /*indent*/) { printf("No dump for this node.\n"); }
 
-        CommandNode(std::shared_ptr<Command> cmd, std::string name) : CommandNode(cmd)
-        {
-            prettyName = name;
-        }
-
-        void dumpPart(int /*indent*/) override
-        {
-            printf("Command: %s\n", prettyName.c_str());
-        }
-
-        std::string toString() override { return prettyName; }
-        int toInteger() override { return stringToInteger(prettyName); }
-        double toDouble() override { return stringToDouble(prettyName); }
-
-        std::shared_ptr<Node> evaluate(ArgIterator&) const override;
-
-        std::shared_ptr<Node> execute(ArgIterator& hIter) override;
-
-        std::shared_ptr<Node> getValue(ArgIterator& hIter) override;
-
-        virtual NodeType getType()
-        {
-            return NodeType::Command;
-        };
-    };
-
-    struct StringNode : Node
+    std::shared_ptr<Node> evaluate()
     {
-        using Node::evaluate;
-        const std::string value;
-        StringNode(std::string value) : value(value) {}
+        ArgIterator tmp;
+        return evaluate(tmp);
+    }
 
-        std::string toString() override { return value; }
-        int toInteger() override { return stringToInteger(value); }
-        double toDouble() override { return stringToDouble(value); }
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const = 0;
 
-        void dumpPart(int /*indent*/) override
-        {
-            printf("Quoted string: %s\n", value.c_str());
-        }
-
-        std::shared_ptr<Node> evaluate(ArgIterator&) const 
-        {
-            return std::make_shared<StringNode>(*this);
-        }
-
-        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
-        {
-            return std::make_shared<StringNode>(*this);
-        }
-
-        virtual NodeType getType()
-        {
-            return NodeType::String;
-        };
-    };
-
-    struct GroupNode : Node
+    virtual std::shared_ptr<Node> execute(ArgIterator & /*hIter*/)
     {
-        using Node::evaluate;
-        std::vector<std::shared_ptr<Node>> nodes;
+        throw error::NonExecutableNode(start);
+    }
 
-        std::string toString() override;
-        int toInteger() override { return stringToInteger(toString()); }
-        double toDouble() override { return stringToDouble(toString()); }
+    virtual std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) = 0;
 
-        void close(Token t)
-        {
-            end = t.end;
-        }
+    virtual std::string toString() = 0;
+    virtual int toInteger() = 0;
+    virtual double toDouble() = 0;
 
-        void dumpPart(int indent) override;
+    virtual NodeType getType() = 0;
+};
 
-        std::shared_ptr<Node> evaluate(ArgIterator&) const override;
+struct IntegerNode : Node
+{
+    using Node::evaluate;
 
-        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
-        {
-            return std::make_shared<GroupNode>(*this);
-        }
+    const int value;
 
-        virtual NodeType getType()
-        {
-            return NodeType::Group;
-        };
-    };
-
-    struct NullNode : Node
+    IntegerNode(int value) : value(value) {}
+    void dumpPart(int /*indent*/) override
     {
-        using Node::evaluate;
-        std::string toString() override { return "null"; }
-        int toInteger() override { return 0; }
-        double toDouble() override { return 0; }
+        printf("Integer: %d\n", value);
+    }
 
-        static std::shared_ptr<Node> instance;
+    std::string toString() override;
+    int toInteger() override { return value; }
+    double toDouble() override { return value; }
 
-        void dumpPart(int /*indent*/) override
-        {
-            printf("Null\n");
-        }
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
+    {
+        return std::make_shared<IntegerNode>(*this);
+    }
 
-        std::shared_ptr<Node> evaluate(ArgIterator&) const
-        {
-            return std::make_shared<NullNode>(*this);
-        }
+    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
+    {
+        return std::make_shared<IntegerNode>(*this);
+    }
 
-        std::shared_ptr<Node> getValue(ArgIterator& /*hIter*/) override
-        {
-            return std::make_shared<NullNode>(*this);
-        }
-
-        virtual NodeType getType()
-        {
-            return NodeType::Null;
-        };
+    NodeType getType() override
+    {
+        return NodeType::Integer;
     };
-}
+};
+
+struct FloatNode : Node
+{
+    using Node::evaluate;
+    const double value;
+
+    FloatNode(double value) : value(value) {}
+
+    void dumpPart(int /*indent*/) override
+    {
+        printf("Float: %g\n", value);
+    }
+
+    std::string toString() override;
+    int toInteger() override { return value; }
+    double toDouble() override { return value; }
+
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
+    {
+        return std::make_shared<FloatNode>(*this);
+    }
+
+    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
+    {
+        return std::make_shared<FloatNode>(*this);
+    }
+
+    virtual NodeType getType()
+    {
+        return NodeType::FloatingPoint;
+    };
+};
+
+int stringToInteger(const std::string &str);
+double stringToDouble(const std::string &str);
+
+struct CommandNode : Node
+{
+    using Node::evaluate;
+    std::shared_ptr<Command> command;
+    std::string prettyName;
+
+    CommandNode(std::shared_ptr<Command> cmd) : command(cmd) {}
+
+    CommandNode(std::shared_ptr<Command> cmd, std::string name) : CommandNode(cmd)
+    {
+        prettyName = name;
+    }
+
+    void dumpPart(int /*indent*/) override
+    {
+        printf("Command: %s\n", prettyName.c_str());
+    }
+
+    std::string toString() override { return prettyName; }
+    int toInteger() override { return stringToInteger(prettyName); }
+    double toDouble() override { return stringToDouble(prettyName); }
+
+    std::shared_ptr<Node> evaluate(ArgIterator &) const override;
+
+    std::shared_ptr<Node> execute(ArgIterator &hIter) override;
+
+    std::shared_ptr<Node> getValue(ArgIterator &hIter) override;
+
+    virtual NodeType getType()
+    {
+        return NodeType::Command;
+    };
+};
+
+struct StringNode : Node
+{
+    using Node::evaluate;
+    const std::string value;
+    StringNode(std::string value) : value(value) {}
+
+    std::string toString() override { return value; }
+    int toInteger() override { return stringToInteger(value); }
+    double toDouble() override { return stringToDouble(value); }
+
+    void dumpPart(int /*indent*/) override
+    {
+        printf("Quoted string: %s\n", value.c_str());
+    }
+
+    std::shared_ptr<Node> evaluate(ArgIterator &) const
+    {
+        return std::make_shared<StringNode>(*this);
+    }
+
+    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
+    {
+        return std::make_shared<StringNode>(*this);
+    }
+
+    virtual NodeType getType()
+    {
+        return NodeType::String;
+    };
+};
+
+struct GroupNode : Node
+{
+    using Node::evaluate;
+    std::vector<std::shared_ptr<Node>> nodes;
+
+    std::string toString() override;
+    int toInteger() override { return stringToInteger(toString()); }
+    double toDouble() override { return stringToDouble(toString()); }
+
+    void close(Token t)
+    {
+        end = t.end;
+    }
+
+    void dumpPart(int indent) override;
+
+    std::shared_ptr<Node> evaluate(ArgIterator &) const override;
+
+    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
+    {
+        return std::make_shared<GroupNode>(*this);
+    }
+
+    virtual NodeType getType()
+    {
+        return NodeType::Group;
+    };
+};
+
+struct NullNode : Node
+{
+    using Node::evaluate;
+    std::string toString() override { return "null"; }
+    int toInteger() override { return 0; }
+    double toDouble() override { return 0; }
+
+    static std::shared_ptr<Node> instance;
+
+    void dumpPart(int /*indent*/) override
+    {
+        printf("Null\n");
+    }
+
+    std::shared_ptr<Node> evaluate(ArgIterator &) const
+    {
+        return std::make_shared<NullNode>(*this);
+    }
+
+    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
+    {
+        return std::make_shared<NullNode>(*this);
+    }
+
+    virtual NodeType getType()
+    {
+        return NodeType::Null;
+    };
+};
+} // namespace pfx

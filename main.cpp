@@ -282,7 +282,6 @@ struct IfCommand : pfx::Command
 
         return thePart->evaluate();
     }
-
 };
 
 static bool isWhitespace(char c)
