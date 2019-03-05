@@ -27,7 +27,7 @@ struct UndefinedCommand : Command
     }
 };
 
-std::shared_ptr<GroupNode> Context::compileCode(Input &input, Position &errorPosition)
+std::shared_ptr<GroupNode> Context::compileCode(Input &input)
 {
     std::string word;
 
@@ -35,8 +35,6 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input, Position &errorPos
     std::stack<std::shared_ptr<GroupNode>> groupStack;
 
     groupStack.push(std::make_shared<GroupNode>());
-
-    errorPosition = Position();
 
     while (readWord(input, token))
     {

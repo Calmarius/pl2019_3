@@ -355,7 +355,6 @@ int main()
     {
         pfx::Input input("hw.txt");
         pfx::Context ctx;
-        pfx::Position error;
 
         ctx.registerCommand("print", std::make_shared<PrintCommand>());
         ctx.registerCommand("println", std::make_shared<PrintLnCommand>());
@@ -382,7 +381,7 @@ int main()
 
         ctx.registerCommand("let", std::make_shared<LetCommand>(&ctx));
 
-        std::shared_ptr<pfx::GroupNode> gn = ctx.compileCode(input, error);
+        std::shared_ptr<pfx::GroupNode> gn = ctx.compileCode(input);
         gn->evaluate();
 
         return 0;
