@@ -21,7 +21,7 @@ std::shared_ptr<Node> ArgIterator::fetchNext()
 
 std::shared_ptr<Node> ArgIterator::evaluateNext()
 {
-    return fetchNext()->getValue(*this);
+    return fetchNext()->evaluate(*this);
 }
 
 ArgIterator::IteratorType ArgIterator::dummy;

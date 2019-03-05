@@ -42,13 +42,6 @@ struct Node
 
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const = 0;
 
-    virtual std::shared_ptr<Node> execute(ArgIterator & /*hIter*/)
-    {
-        throw error::NonExecutableNode(start);
-    }
-
-    virtual std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) = 0;
-
     virtual std::string toString() = 0;
     virtual int toInteger() = 0;
     virtual double toDouble() = 0;
@@ -77,11 +70,6 @@ struct IntegerNode : Node
         return std::make_shared<IntegerNode>(*this);
     }
 
-    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
-    {
-        return std::make_shared<IntegerNode>(*this);
-    }
-
     NodeType getType() override
     {
         return NodeType::Integer;
@@ -105,11 +93,6 @@ struct FloatNode : Node
     double toDouble() override { return value; }
 
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
-    {
-        return std::make_shared<FloatNode>(*this);
-    }
-
-    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
     {
         return std::make_shared<FloatNode>(*this);
     }
@@ -147,10 +130,6 @@ struct CommandNode : Node
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
 
-    std::shared_ptr<Node> execute(ArgIterator &hIter) override;
-
-    std::shared_ptr<Node> getValue(ArgIterator &hIter) override;
-
     virtual NodeType getType()
     {
         return NodeType::Command;
@@ -173,11 +152,6 @@ struct StringNode : Node
     }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const
-    {
-        return std::make_shared<StringNode>(*this);
-    }
-
-    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
     {
         return std::make_shared<StringNode>(*this);
     }
@@ -206,11 +180,6 @@ struct GroupNode : Node
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
 
-    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
-    {
-        return std::make_shared<GroupNode>(*this);
-    }
-
     virtual NodeType getType()
     {
         return NodeType::Group;
@@ -232,11 +201,6 @@ struct NullNode : Node
     }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const
-    {
-        return std::make_shared<NullNode>(*this);
-    }
-
-    std::shared_ptr<Node> getValue(ArgIterator & /*hIter*/) override
     {
         return std::make_shared<NullNode>(*this);
     }

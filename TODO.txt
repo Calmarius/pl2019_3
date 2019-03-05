@@ -1,5 +1,3 @@
-Consider using the GroupNode::execute for executing the group instead of context.
-
 What about using an evaluate method for all kinds of node evaluations?
 
 Perhaps move out even the register command stuff from the context.

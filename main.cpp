@@ -188,7 +188,9 @@ struct ListCommand : pfx::Command
 
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef arg = iter.evaluateNext();
+        pfx::NodeRef arg = iter.fetchNext();
+
+        if (arg->getType() != pfx::NodeType::Group) return arg;
 
         return ctx->evaluateGroup(*dynamic_cast<pfx::GroupNode *>(arg.get()));
     }
@@ -246,20 +248,12 @@ struct WhileCommand : pfx::Command
 
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef conditionNode = iter.evaluateNext();
-        pfx::NodeRef statementNode = iter.evaluateNext();
+        pfx::NodeRef conditionNode = iter.fetchNext();
+        pfx::NodeRef statementNode = iter.fetchNext();
 
-        pfx::GroupNode *condition = dynamic_cast<pfx::GroupNode *>(conditionNode.get());
-        pfx::GroupNode *statement = dynamic_cast<pfx::GroupNode *>(statementNode.get());
-
-        if (!condition || !statement || !condition->nodes.size())
+        while (conditionNode->evaluate()->toInteger())
         {
-            return pfx::NullNode::instance;
-        }
-
-        while (condition->evaluate()->toInteger())
-        {
-            statement->evaluate();
+            statementNode->evaluate();
         }
 
         return pfx::NullNode::instance;
@@ -275,8 +269,8 @@ struct IfCommand : pfx::Command
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
         pfx::NodeRef cond = iter.evaluateNext();
-        pfx::NodeRef thenPart = iter.evaluateNext();
-        pfx::NodeRef elsePart = iter.evaluateNext();
+        pfx::NodeRef thenPart = iter.fetchNext();
+        pfx::NodeRef elsePart = iter.fetchNext();
 
         pfx::NodeRef &thePart = cond->toInteger() ? thenPart : elsePart;
 

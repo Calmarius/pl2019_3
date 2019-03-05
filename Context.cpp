@@ -26,7 +26,7 @@ std::shared_ptr<GroupNode> Context::evaluateGroup(const GroupNode &groupNode)
         try
         {
             ArgIterator tmp(i, end);
-            std::shared_ptr<Node> resultNode = i->get()->getValue(tmp);
+            std::shared_ptr<Node> resultNode = i->get()->evaluate(tmp);
             newGroupNode->nodes.push_back(resultNode);
         }
         catch (Error e)
