@@ -46,9 +46,6 @@ namespace pfx
         virtual double toDouble() = 0;
 
         virtual NodeType getType() = 0;
-
-        virtual int getPayloadSize() = 0;
-        virtual std::string getPayload() = 0;
     };
 
     struct IntegerNode : Node
@@ -74,16 +71,6 @@ namespace pfx
         {
             return NodeType::Integer;
         };
-
-        int getPayloadSize() override
-        {
-            return sizeof(value);
-        }
-
-        std::string getPayload() override
-        {
-            return std::string(reinterpret_cast<const char *>(&value), sizeof(value));
-        }
     };
 
     struct FloatNode : Node
@@ -110,16 +97,6 @@ namespace pfx
         {
             return NodeType::FloatingPoint;
         };
-
-        int getPayloadSize() override
-        {
-            return sizeof(value);
-        }
-
-        std::string getPayload() override
-        {
-            return std::string(reinterpret_cast<const char *>(&value), sizeof(value));
-        }
     };
 
     int stringToInteger(const std::string &str);
@@ -154,16 +131,6 @@ namespace pfx
         {
             return NodeType::Command;
         };
-
-        int getPayloadSize() override
-        {
-            throw error::NotImplemented(start);
-        }
-
-        std::string getPayload() override
-        {
-            throw error::NotImplemented(start);
-        }
     };
 
     struct StringNode : Node
@@ -189,16 +156,6 @@ namespace pfx
         {
             return NodeType::String;
         };
-
-        int getPayloadSize() override
-        {
-            return sizeof(value);
-        }
-
-        std::string getPayload() override
-        {
-            return value;
-        }
     };
 
     struct GroupNode : Node
@@ -225,16 +182,6 @@ namespace pfx
         {
             return NodeType::Group;
         };
-
-        int getPayloadSize() override
-        {
-            throw error::InvalidOperation(start);
-        }
-
-        std::string getPayload() override
-        {
-            throw error::InvalidOperation(start);
-        }
     };
 
     struct NullNode : Node
@@ -259,15 +206,5 @@ namespace pfx
         {
             return NodeType::Null;
         };
-
-        int getPayloadSize() override
-        {
-            throw error::InvalidOperation(start);
-        }
-
-        std::string getPayload() override
-        {
-            throw error::InvalidOperation(start);
-        }
     };
 }
