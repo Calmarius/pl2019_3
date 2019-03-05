@@ -54,4 +54,29 @@ namespace pfx
 
     std::shared_ptr<Node> NullNode::instance = std::make_shared<NullNode>();
 
+    std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter) const 
+    {
+        return command->execute(hIter);
+    }
+
+    std::shared_ptr<Node> GroupNode::evaluate(ArgIterator&) const 
+    {
+        const auto end = nodes.end();
+        std::shared_ptr<Node> resultNode = NullNode::instance;
+
+        for (auto i = nodes.begin(); i != nodes.end(); ++i)
+        {
+            try
+            {
+                ArgIterator iter(i, end);
+                resultNode = i->get()->evaluate(iter);
+            }
+            catch (Error e)
+            {
+                throw;
+            }
+        }
+        return resultNode;        
+    }
+
 }

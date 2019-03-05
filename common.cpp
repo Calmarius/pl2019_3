@@ -24,4 +24,6 @@ std::shared_ptr<Node> ArgIterator::evaluateNext()
     return fetchNext()->getValue(*this);
 }
 
+ArgIterator::IteratorType ArgIterator::dummy;
+
 } // namespace pfx

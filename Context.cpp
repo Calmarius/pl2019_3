@@ -15,26 +15,6 @@ void Context::registerCommand(std::string name, std::shared_ptr<Command> command
     }
 }
 
-std::shared_ptr<Node> Context::executeGroup(const GroupNode &groupNode)
-{
-    auto end = groupNode.nodes.end();
-    std::shared_ptr<Node> resultNode = NullNode::instance;
-
-    for (auto i = groupNode.nodes.begin(); i != groupNode.nodes.end(); ++i)
-    {
-        try
-        {
-            ArgIterator iter(i, end);
-            resultNode = i->get()->execute(iter);
-        }
-        catch (Error e)
-        {
-            throw;
-        }
-    }
-    return resultNode;
-}
-
 std::shared_ptr<GroupNode> Context::evaluateGroup(const GroupNode &groupNode)
 {
     auto newGroupNode = std::make_shared<GroupNode>();
@@ -63,7 +43,7 @@ struct UndefinedCommand : Command
 
     UndefinedCommand(Position pos) : pos(pos) {}
 
-    NodeRef execute(ArgIterator&) override
+    NodeRef execute(ArgIterator &) override
     {
         throw error::UndefinedCommand(pos);
     }

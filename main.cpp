@@ -257,9 +257,9 @@ struct WhileCommand : pfx::Command
             return pfx::NullNode::instance;
         }
 
-        while (ctx->executeGroup(*condition)->toInteger())
+        while (condition->evaluate()->toInteger())
         {
-            ctx->executeGroup(*statement);
+            statement->evaluate();
         }
 
         return pfx::NullNode::instance;
@@ -280,16 +280,7 @@ struct IfCommand : pfx::Command
 
         pfx::NodeRef &thePart = cond->toInteger() ? thenPart : elsePart;
 
-        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode*>(thePart.get());
-
-        if (gn)
-        {
-            return ctx->executeGroup(*gn);
-        }
-        else
-        {
-            return thePart;
-        }
+        return thePart->evaluate();
     }
 
 };
@@ -397,7 +388,7 @@ int main()
         ctx.registerCommand("let", std::make_shared<LetCommand>(&ctx));
 
         std::shared_ptr<pfx::GroupNode> gn = ctx.compileCode(input, error);
-        ctx.executeGroup(*gn);
+        gn->evaluate();
 
         return 0;
     }

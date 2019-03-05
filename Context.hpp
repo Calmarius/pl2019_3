@@ -14,7 +14,6 @@ class Context
 
   public:
     void registerCommand(std::string name, std::shared_ptr<Command> command);
-    std::shared_ptr<Node> executeGroup(const GroupNode& groupNode);
     std::shared_ptr<GroupNode> compileCode(Input &input, Position &errorPosition);
     std::shared_ptr<GroupNode> evaluateGroup(const GroupNode& groupNode);
 };

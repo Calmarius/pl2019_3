@@ -63,11 +63,15 @@ struct Node;
 
 class ArgIterator
 {
+  private:
     typedef std::vector<std::shared_ptr<Node>>::const_iterator IteratorType;
     IteratorType& current;
     IteratorType end;
 
+    static IteratorType dummy;
+
   public:
+    ArgIterator() : current(dummy), end(dummy) {}
     ArgIterator(IteratorType& current, IteratorType end) : current(current), end(end) {}
 
     std::shared_ptr<Node> evaluateNext();
