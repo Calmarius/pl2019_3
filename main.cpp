@@ -369,7 +369,7 @@ int main()
 
         ctx.registerCommand("let", std::make_shared<LetCommand>(&ctx));
 
-        std::shared_ptr<pfx::GroupNode> gn = ctx.compileCode(input);
+        pfx::NodeRef gn = ctx.compileCode(input);
         gn->evaluate();
 
         return 0;
