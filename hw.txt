@@ -10,8 +10,6 @@ println list ( "Divide: " / 42.0 3.3 )
 
 println list ( "Square root of 10: " sqrt 10 )
 
-let "foo" 44
-
 let x 42
 println x
 

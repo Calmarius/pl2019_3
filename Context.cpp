@@ -119,4 +119,16 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
 
     return std::shared_ptr<GroupNode>(groupStack.top());
 }
+
+std::shared_ptr<Command> Context::getCommand(std::string name)
+{
+    auto iter = commands.find(name);
+
+    if (iter == commands.end())
+    {
+        return std::shared_ptr<Command>();
+    }
+    return iter->second->command;
+}
+
 } // namespace pfx
