@@ -462,6 +462,18 @@ struct CommentCommand : pfx::Command
     }
 };
 
+struct DumpCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef n = iter.evaluateNext();
+
+        n->dump();
+
+        return pfx::NullNode::instance;
+    }
+};
+
 
 int main()
 {
@@ -472,6 +484,7 @@ int main()
 
         ctx.setCommand("print", std::make_shared<PrintCommand>());
         ctx.setCommand("println", std::make_shared<PrintLnCommand>());
+        ctx.setCommand("dump", std::make_shared<DumpCommand>());
 
         ctx.setCommand("int", std::make_shared<ToIntCommand>());
         ctx.setCommand("float", std::make_shared<ToFloatCommand>());

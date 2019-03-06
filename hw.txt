@@ -22,6 +22,7 @@ while ( < x 10 )
 
 // (
     print "Enter number: "
+    
     let x int readline
     if < x 500
     (
@@ -44,12 +45,14 @@ function solveQuadratic ( a b c ) ( d x1 x2 )
     if < d 0.0
     (
         println "No solution"
+        list ( )
     )
     (
         let x1 / + - 0.0 b sqrt d * 2.0 a
         let x2 / - - 0.0 b sqrt d * 2.0 a
         println list ( "Solution 1: " x1 )
         println list ( "Solution 2: " x2 )
+        list ( x1 x2 )
     )
 )
 
@@ -57,7 +60,15 @@ let a 10
 let b 11
 let c 12
 solveQuadratic 1 5 6
+solveQuadratic 6 1 6
 println list ( "Global A is: " a )
 println list ( "Global B is: " b )
 println list ( "Global C is: " c )
+
+function square ( x ) ( ) ( * x x )
+
+println square square 3
+
+
+ 
 
