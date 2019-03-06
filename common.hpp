@@ -47,11 +47,10 @@ DECLARE_ERROR(UndefinedCommand, "This command is undefined.");
 
 #undef DECLARE_ERROR
 
-    struct RuntimeError : Error
-    {
-        RuntimeError(Position p, std::string msg) : Error(p, msg) {}
-    };
-
+struct RuntimeError : Error
+{
+    RuntimeError(Position p, std::string msg) : Error(p, msg) {}
+};
 
 } // namespace error
 
@@ -82,6 +81,7 @@ class ArgIterator
 
     std::shared_ptr<Node> evaluateNext();
     std::shared_ptr<Node> fetchNext();
+    bool ended() { return current == end; }
 };
 
 struct Command

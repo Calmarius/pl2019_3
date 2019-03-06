@@ -54,12 +54,12 @@ std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
     const auto end = nodes.end();
     std::shared_ptr<Node> resultNode = NullNode::instance;
 
-    for (auto i = nodes.begin(); i != nodes.end(); ++i)
+    for (auto i = nodes.begin(); i != nodes.end();)
     {
         try
         {
             ArgIterator iter(i, end);
-            resultNode = i->get()->evaluate(iter);
+            resultNode = (i++)->get()->evaluate(iter);
         }
         catch (Error e)
         {
@@ -74,11 +74,11 @@ std::shared_ptr<GroupNode> GroupNode::evaluateAll() const
     auto newGroupNode = std::make_shared<GroupNode>();
 
     auto end = nodes.end();
-    for (auto i = nodes.begin(); i != end; ++i)
+    for (auto i = nodes.begin(); i != end;)
     {
         ArgIterator tmp(i, end);
 
-        newGroupNode->nodes.push_back(i->get()->evaluate(tmp));
+        newGroupNode->nodes.push_back((i++)->get()->evaluate(tmp));
     }
     return newGroupNode;
 }

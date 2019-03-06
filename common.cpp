@@ -16,7 +16,9 @@ std::shared_ptr<Node> ArgIterator::fetchNext()
     {
         return NullNode::instance;
     }
-    return *++current;
+    std::shared_ptr<Node> tmp = *current;
+    current++;
+    return tmp;
 }
 
 std::shared_ptr<Node> ArgIterator::evaluateNext()

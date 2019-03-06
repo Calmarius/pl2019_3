@@ -69,6 +69,9 @@ function square ( x ) ( ) ( * x x )
 
 println square square 3
 
+dump map square list ( 1 2 3 4 5 6 7 )
+dump map sqrt list ( 1 2 3 4 5 6 7 )
+
 
  
 

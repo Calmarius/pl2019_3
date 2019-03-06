@@ -361,16 +361,16 @@ struct FunctionRunner : pfx::Command
         savedLocals.clear();
 
         // Save previous meanings of the formal arguments and locals and override them with new meanings.
-        for (auto &x : dynamic_cast<pfx::GroupNode*>(args.get())->nodes)
+        for (auto &x : dynamic_cast<pfx::GroupNode *>(args.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
             savedArgs.push_back(cn->command);
             cn->command = std::make_shared<ContainerCommand>(iter.evaluateNext());
         }
 
-        for (auto &x : dynamic_cast<pfx::GroupNode*>(locals.get())->nodes)
+        for (auto &x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
             savedLocals.push_back(cn->command);
             cn->command = std::make_shared<ContainerCommand>();
         }
@@ -380,16 +380,16 @@ struct FunctionRunner : pfx::Command
 
         // Restore the meanings of the overridden stuff.
         int i = 0;
-        for (auto &x : dynamic_cast<pfx::GroupNode*>(args.get())->nodes)
+        for (auto &x : dynamic_cast<pfx::GroupNode *>(args.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
             cn->command = savedArgs[i++];
         }
 
         i = 0;
-        for (auto &x : dynamic_cast<pfx::GroupNode*>(locals.get())->nodes)
+        for (auto &x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
             cn->command = savedLocals[i++];
         }
 
@@ -474,6 +474,36 @@ struct DumpCommand : pfx::Command
     }
 };
 
+struct MapCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef mapNode = iter.fetchNext();
+        pfx::NodeRef groupNode = iter.evaluateNext();
+
+        pfx::CommandNode *mapFn = dynamic_cast<pfx::CommandNode *>(mapNode.get());
+        if (!mapFn)
+        {
+            mapNode->raiseError("Command node expected.");
+        }
+        const pfx::GroupNode *group = dynamic_cast<pfx::GroupNode *>(groupNode.get());
+        if (!group)
+        {
+            groupNode->raiseError("Group node expected");
+        }
+
+        std::shared_ptr<pfx::GroupNode> newGroup = std::make_shared<pfx::GroupNode>();
+
+        auto begin = group->nodes.begin();
+        pfx::ArgIterator groupIter(begin, group->nodes.end());
+        while (!groupIter.ended())
+        {
+            newGroup->nodes.push_back(mapFn->evaluate(groupIter));
+        }
+
+        return newGroup;
+    }
+};
 
 int main()
 {
@@ -508,6 +538,7 @@ int main()
 
         ctx.setCommand("let", std::make_shared<LetCommand>());
         ctx.setCommand("function", std::make_shared<FunctionCommand>());
+        ctx.setCommand("map", std::make_shared<MapCommand>());
 
         ctx.setCommand("//", std::make_shared<CommentCommand>());
 
