@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <memory>
+#include <typeinfo>
 
 struct PrintCommand : pfx::Command
 {
@@ -194,35 +195,37 @@ struct ListCommand : pfx::Command
     }
 };
 
-void registerNodeCommand(pfx::Context *ctx, std::string name, pfx::NodeRef node)
+struct ContainerCommand : pfx::Command
 {
-    struct NodeCommand : pfx::Command
+    pfx::NodeRef ref;
+
+    ContainerCommand() : ContainerCommand(pfx::NullNode::instance) {}
+
+    ContainerCommand(pfx::NodeRef ref) : ref(ref) {}
+
+    pfx::NodeRef execute(pfx::ArgIterator &) override
     {
-        pfx::NodeRef ref;
-
-        NodeCommand(pfx::NodeRef ref) : ref(ref) {}
-
-        pfx::NodeRef execute(pfx::ArgIterator &) override
-        {
-            return ref;
-        }
-    };
-
-    ctx->setCommand(name, std::make_shared<NodeCommand>(node));
-}
+        return ref;
+    }
+};
 
 struct LetCommand : pfx::Command
 {
-    pfx::Context *ctx;
-
-    LetCommand(pfx::Context *ctx) : ctx(ctx) {}
-
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef arg1 = iter.fetchNext();
-        pfx::NodeRef arg2 = iter.evaluateNext();
+        pfx::NodeRef variable = iter.fetchNext();
+        pfx::NodeRef value = iter.evaluateNext();
 
-        registerNodeCommand(ctx, arg1->toString(), arg2);
+        pfx::CommandNode *cmd = dynamic_cast<pfx::CommandNode*>(variable.get());
+        if (!cmd) variable->raiseError("This is not a variable!");
+        ContainerCommand *varContainer = dynamic_cast<ContainerCommand*>(cmd->command.get());
+        if (!varContainer)
+        {
+            auto tmp = std::make_shared<ContainerCommand>();
+            cmd->command = tmp;
+            varContainer = tmp.get();
+        }
+        varContainer->ref = value;
 
         return pfx::NullNode::instance;
     }
@@ -367,7 +370,7 @@ int main()
 
         ctx.setCommand("<", std::make_shared<LessCommand>());
 
-        ctx.setCommand("let", std::make_shared<LetCommand>(&ctx));
+        ctx.setCommand("let", std::make_shared<LetCommand>());
 
         pfx::NodeRef gn = ctx.compileCode(input);
         gn->evaluate();

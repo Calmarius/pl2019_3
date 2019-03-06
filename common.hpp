@@ -13,9 +13,9 @@ struct Position
 struct Error
 {
     Position position;
-    const char *reason;
+    std::string reason;
 
-    Error(Position pos, const char *reason) : position(pos), reason(reason) {}
+    Error(Position pos, std::string reason) : position(pos), reason(reason) {}
     std::string toString();
     /*Ok,
         FailedToOpenFile,
@@ -46,6 +46,12 @@ DECLARE_ERROR(ClosingBraceExpected, "For forgot to close a '('.");
 DECLARE_ERROR(UndefinedCommand, "This command is undefined.");
 
 #undef DECLARE_ERROR
+
+    struct RuntimeError : Error
+    {
+        RuntimeError(Position p, std::string msg) : Error(p, msg) {}
+    };
+
 
 } // namespace error
 

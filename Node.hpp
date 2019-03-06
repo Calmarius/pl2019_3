@@ -47,6 +47,11 @@ struct Node
     virtual double toDouble() = 0;
 
     virtual NodeType getType() = 0;
+
+    void raiseError(std::string message)
+    {
+        throw error::RuntimeError(start, message);
+    }
 };
 
 struct IntegerNode : Node

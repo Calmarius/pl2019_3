@@ -7,7 +7,7 @@ std::string Position::toString()
 
 std::string Error::toString()
 {
-    return ssprintf("%s: %s", position.toString().c_str(), reason);
+    return ssprintf("%s: %s", position.toString().c_str(), reason.c_str());
 }
 
 std::shared_ptr<Node> ArgIterator::fetchNext()
