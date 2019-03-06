@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <memory>
 #include <typeinfo>
+#include <vector>
 
 struct PrintCommand : pfx::Command
 {
@@ -187,9 +188,10 @@ struct ListCommand : pfx::Command
     {
         pfx::NodeRef arg = iter.fetchNext();
 
-        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode*>(arg.get());
+        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode *>(arg.get());
 
-        if (gn) return gn->evaluateAll();
+        if (gn)
+            return gn->evaluateAll();
 
         return arg;
     }
@@ -216,9 +218,10 @@ struct LetCommand : pfx::Command
         pfx::NodeRef variable = iter.fetchNext();
         pfx::NodeRef value = iter.evaluateNext();
 
-        pfx::CommandNode *cmd = dynamic_cast<pfx::CommandNode*>(variable.get());
-        if (!cmd) variable->raiseError("This is not a variable!");
-        ContainerCommand *varContainer = dynamic_cast<ContainerCommand*>(cmd->command.get());
+        pfx::CommandNode *cmd = dynamic_cast<pfx::CommandNode *>(variable.get());
+        if (!cmd)
+            variable->raiseError("This is not a variable!");
+        ContainerCommand *varContainer = dynamic_cast<ContainerCommand *>(cmd->command.get());
         if (!varContainer)
         {
             auto tmp = std::make_shared<ContainerCommand>();
@@ -340,6 +343,131 @@ struct ReadLineCommand : pfx::Command
     }
 };
 
+struct FunctionRunner : pfx::Command
+{
+    std::vector<pfx::NodeRef> argNodes;
+    std::vector<pfx::NodeRef> localNodes;
+    std::vector<pfx::CommandRef> savedArgs;
+    std::vector<pfx::CommandRef> savedLocals;
+    pfx::NodeRef body;
+
+    FunctionRunner(std::vector<pfx::NodeRef> args, std::vector<pfx::NodeRef> locals, pfx::NodeRef body) : argNodes(args), localNodes(locals), body(body)
+    {
+    }
+
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        savedArgs.clear();
+        savedLocals.clear();
+
+        // Save previous meanings of the formal arguments and locals and override them with new meanings.
+        for (auto &x : argNodes)
+        {
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            savedArgs.push_back(cn->command);
+            cn->command = std::make_shared<ContainerCommand>(iter.evaluateNext());
+        }
+
+        for (auto &x : localNodes)
+        {
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            savedLocals.push_back(cn->command);
+            cn->command = std::make_shared<ContainerCommand>();
+        }
+
+        // Execute the body
+        pfx::NodeRef result = body->evaluate();
+
+        // Restore the meanings of the overridden stuff.
+        int i = 0;
+        for (auto &x : argNodes)
+        {
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            cn->command = savedArgs[i++];
+        }
+
+        i = 0;
+        for (auto &x : localNodes)
+        {
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode*>(x.get());
+            cn->command = savedLocals[i++];
+        }
+
+        // Done.
+        return result;
+    }
+};
+
+struct FunctionCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef fNameRef = iter.fetchNext();
+        pfx::NodeRef argsGroupRef = iter.fetchNext();
+        pfx::NodeRef localsRef = iter.fetchNext();
+        pfx::NodeRef bodyRef = iter.fetchNext();
+
+        pfx::CommandNode *fName = dynamic_cast<pfx::CommandNode *>(fNameRef.get());
+        if (!fName)
+        {
+            fNameRef->raiseError("Identifier expected.");
+        }
+
+        pfx::GroupNode *argsGroup = dynamic_cast<pfx::GroupNode *>(argsGroupRef.get());
+        if (!argsGroup)
+        {
+            argsGroupRef->raiseError("Group node expected (for arguments)");
+        }
+
+        pfx::GroupNode *locals = dynamic_cast<pfx::GroupNode *>(localsRef.get());
+        if (!locals)
+        {
+            localsRef->raiseError("Group node expected (for locals) ");
+        }
+
+        pfx::GroupNode *body = dynamic_cast<pfx::GroupNode *>(bodyRef.get());
+        if (!body)
+        {
+            bodyRef->raiseError("Group node expected (for function body)");
+        }
+
+        std::vector<pfx::NodeRef> argNodes;
+        std::vector<pfx::NodeRef> localNodes;
+
+        for (auto arg : argsGroup->nodes)
+        {
+            if (!dynamic_cast<pfx::CommandNode *>(arg.get()))
+            {
+                arg->raiseError("Identifier expected.");
+            }
+            argNodes.push_back(arg);
+        }
+        for (auto arg : locals->nodes)
+        {
+            if (!dynamic_cast<pfx::CommandNode *>(arg.get()))
+            {
+                arg->raiseError("Identifier expected.");
+            }
+            localNodes.push_back(arg);
+        }
+
+        fName->command = std::make_shared<FunctionRunner>(argNodes, localNodes, bodyRef);
+
+        return pfx::NullNode::instance;
+    }
+};
+
+struct CommentCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        iter.fetchNext();
+
+        return pfx::NullNode::instance;
+    }
+};
+
+
 int main()
 {
     try
@@ -371,6 +499,9 @@ int main()
         ctx.setCommand("<", std::make_shared<LessCommand>());
 
         ctx.setCommand("let", std::make_shared<LetCommand>());
+        ctx.setCommand("function", std::make_shared<FunctionCommand>());
+
+        ctx.setCommand("//", std::make_shared<CommentCommand>());
 
         pfx::NodeRef gn = ctx.compileCode(input);
         gn->evaluate();

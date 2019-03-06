@@ -3,6 +3,7 @@
 namespace pfx
 {
 using NodeRef = std::shared_ptr<Node>;
+using CommandRef = std::shared_ptr<Command>;
 
 struct Node
 {
