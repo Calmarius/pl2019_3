@@ -39,11 +39,6 @@ function solveQuadratic ( a b c ) ( d x1 x2 )
     let b float b
     let c float c
 
-    println list ( "A is: " a )
-    println list ( "B is: " b )
-    println list ( "C is: " c )
-    println list ( "D is: " d )
-
     let d - * b b * * 4.0 a c
     println list ( "Discriminant is: " d )
     if < d 0.0
