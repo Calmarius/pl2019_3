@@ -478,18 +478,20 @@ struct MapCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
+        pfx::NodeRef mapPos = iter.next();
         pfx::NodeRef mapNode = iter.evaluateNext();
+        pfx::NodeRef groupPos = iter.next();
         pfx::NodeRef groupNode = iter.evaluateNext();
 
         pfx::CommandNode *mapFn = dynamic_cast<pfx::CommandNode *>(mapNode.get());
         if (!mapFn)
         {
-            mapNode->raiseError("Command node expected.");
+            mapPos->raiseError("Command node expected.");
         }
         const pfx::GroupNode *group = dynamic_cast<pfx::GroupNode *>(groupNode.get());
         if (!group)
         {
-            groupNode->raiseError("Group node expected");
+            groupPos->raiseError("Group node expected");
         }
 
         std::shared_ptr<pfx::GroupNode> newGroup = std::make_shared<pfx::GroupNode>();

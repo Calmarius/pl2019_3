@@ -79,6 +79,7 @@ class ArgIterator
     ArgIterator() : current(dummy), end(dummy) {}
     ArgIterator(IteratorType &current, IteratorType end) : current(current), end(end) {}
 
+    std::shared_ptr<Node> next() {return *current;}
     std::shared_ptr<Node> evaluateNext();
     std::shared_ptr<Node> fetchNext();
     bool ended() { return current == end; }
