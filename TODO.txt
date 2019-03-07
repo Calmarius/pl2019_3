@@ -1,5 +1,5 @@
-What about using an evaluate method for all kinds of node evaluations?
+Despite the fact all command nodes are equal, the positions are different. There must be a way to handle this somehow.
 
-Perhaps move out even the register command stuff from the context.
+
 
 
