@@ -7,8 +7,8 @@ using CommandRef = std::shared_ptr<Command>;
 
 struct Node
 {
-    Position start;
-    Position end;
+    Position start = Position();
+    Position end = Position();
 
     Node()
     {
