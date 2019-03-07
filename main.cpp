@@ -478,7 +478,7 @@ struct MapCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef mapNode = iter.fetchNext();
+        pfx::NodeRef mapNode = iter.evaluateNext();
         pfx::NodeRef groupNode = iter.evaluateNext();
 
         pfx::CommandNode *mapFn = dynamic_cast<pfx::CommandNode *>(mapNode.get());
@@ -502,6 +502,14 @@ struct MapCommand : pfx::Command
         }
 
         return newGroup;
+    }
+};
+
+struct FetchCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        return iter.fetchNext();
     }
 };
 
@@ -539,6 +547,7 @@ int main()
         ctx.setCommand("let", std::make_shared<LetCommand>());
         ctx.setCommand("function", std::make_shared<FunctionCommand>());
         ctx.setCommand("map", std::make_shared<MapCommand>());
+        ctx.setCommand("fetch", std::make_shared<FetchCommand>());
 
         ctx.setCommand("//", std::make_shared<CommentCommand>());
 
