@@ -11,20 +11,14 @@ struct Node
     {
     }
 
-    virtual ~Node() {}
-
     void dumpIndent(int indent)
     {
         printf("%*s", indent * 4, "");
     }
 
-    void dump(int indent = 0)
-    {
-        dumpIndent(indent);
-        dumpPart(indent);
-    }
+    virtual ~Node() {}
 
-    virtual void dumpPart(int /*indent*/) { printf("No dump for this node.\n"); }
+    virtual void dump(int /*indent*/=0) {printf("(none)");};
 
     std::shared_ptr<Node> evaluate()
     {
@@ -48,9 +42,9 @@ struct IntegerNode : Node
     const int value;
 
     IntegerNode(int value) : value(value) {}
-    void dumpPart(int /*indent*/) override
+    void dump(int /*indent*/) override
     {
-        printf("Integer: %d\n", value);
+        printf("Integer: %d", value);
     }
 
     std::string toString() override;
@@ -75,9 +69,9 @@ struct FloatNode : Node
 
     FloatNode(double value) : value(value) {}
 
-    void dumpPart(int /*indent*/) override
+    void dump(int /*indent*/) override
     {
-        printf("Float: %g\n", value);
+        printf("Float: %g", value);
     }
 
     std::string toString() override;
@@ -111,9 +105,9 @@ struct CommandNode : Node
         prettyName = name;
     }
 
-    void dumpPart(int /*indent*/) override
+    void dump(int /*indent*/) override
     {
-        printf("Command: %s\n", prettyName.c_str());
+        printf("Command: %s", prettyName.c_str());
     }
 
     std::string toString() override { return prettyName; }
@@ -138,9 +132,9 @@ struct StringNode : Node
     int toInteger() override { return stringToInteger(value); }
     double toDouble() override { return stringToDouble(value); }
 
-    void dumpPart(int /*indent*/) override
+    void dump(int /*indent*/) override
     {
-        printf("Quoted string: %s\n", value.c_str());
+        printf("Quoted string: %s", value.c_str());
     }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const
@@ -185,7 +179,7 @@ struct GroupNode : Node
     int toInteger() override { return stringToInteger(toString()); }
     double toDouble() override { return stringToDouble(toString()); }
 
-    void dumpPart(int indent) override;
+    void dump(int indent) override;
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
 
@@ -206,9 +200,9 @@ struct NullNode : Node
 
     static std::shared_ptr<Node> instance;
 
-    void dumpPart(int /*indent*/) override
+    void dump(int /*indent*/) override
     {
-        printf("Null\n");
+        printf("Null");
     }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const

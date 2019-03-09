@@ -474,6 +474,7 @@ struct DumpCommand : pfx::Command
         pfx::NodeRef n = iter.evaluateNext();
 
         n->dump();
+        puts("");
 
         return pfx::NullNode::instance;
     }

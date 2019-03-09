@@ -59,8 +59,8 @@ function solveQuadratic ( a b c ) ( d x1 x2 )
 let a 10
 let b 11
 let c 12
-solveQuadratic 1 5 6
-solveQuadratic 6 1 6
+dump solveQuadratic 1 5 6
+dump solveQuadratic 6 1 6
 println list ( "Global A is: " a )
 println list ( "Global B is: " b )
 println list ( "Global C is: " c )

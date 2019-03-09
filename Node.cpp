@@ -11,16 +11,19 @@ std::string FloatNode::toString()
     return ssprintf("%g", value);
 }
 
-void GroupNode::dumpPart(int indent)
+void GroupNode::dump(int indent)
 {
     printf("(\n");
     for (unsigned i = 0; i < nodes.size(); i++)
     {
         NodeInfo &current = nodes[i];
+        dumpIndent(indent + 1);
         current.node->dump(indent + 1);
+        //printf(" %s-%s\n", current.start.toString().c_str(), current.end.toString().c_str());
+        printf("\n");
     }
     dumpIndent(indent);
-    printf(")\n");
+    printf(")");
 }
 
 std::string GroupNode::toString()
