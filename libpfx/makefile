@@ -1,13 +1,8 @@
 
-SRCS := $(wildcard *.cpp *.c *.h *.hpp)
-CXXFLAGS := -Wall -Wextra -fmax-errors=1
 LIBNAME := libpfx.a
 
-ifeq ($(debug), yes)
-	CXXFLAGS += -g -O0 -DDEBUG
-else
-	CXXFLAGS += -O5 -DNDEBUG
-endif
+SRCS := $(wildcard impl/*.cpp impl/*.c impl/*.h impl/*.hpp)
+include ../common/makefile.inc
 
 .PHONY: all clean
 
@@ -17,7 +12,7 @@ clean:
 	rm -f $(LIBNAME)
 
 libpfx.a: $(SRCS)
-	$(CXX) $(CXXFLAGS)  -c  _.cpp -o _.o
+	$(CXX) $(CXXFLAGS)  -c  impl/_.cpp -o _.o
 	$(AR) rcs $(LIBNAME) _.o
 	rm *.o
 
