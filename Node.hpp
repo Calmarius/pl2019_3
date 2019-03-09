@@ -1,9 +1,7 @@
-#pragma once
-
 namespace pfx
 {
+struct Node;
 using NodeRef = std::shared_ptr<Node>;
-using CommandRef = std::shared_ptr<Command>;
 
 struct Node
 {
@@ -89,9 +87,6 @@ struct FloatNode : Node
     };
 };
 
-int stringToInteger(const std::string &str);
-double stringToDouble(const std::string &str);
-
 struct CommandNode : Node
 {
     using Node::evaluate;
@@ -146,28 +141,6 @@ struct StringNode : Node
     {
         return NodeType::String;
     };
-};
-
-struct NodeInfo
-{
-    Position start = Position();
-    Position end = Position();
-    std::shared_ptr<Node> node;
-
-    NodeInfo(std::shared_ptr<Node> n) : node(n) {}
-
-    NodeInfo(std::shared_ptr<Node> n, Token t) : start(t.start), end(t.end), node(n) {}
-
-    void setToken(Token t)
-    {
-        start = t.start;
-        end = t.end;
-    }
-
-    void close(Token t)
-    {
-        end = t.end;
-    }
 };
 
 struct GroupNode : Node

@@ -36,16 +36,6 @@ std::string GroupNode::toString()
     return str;
 }
 
-int stringToInteger(const std::string &str)
-{
-    return static_cast<int>(strtol(str.c_str(), nullptr, 10));
-}
-
-double stringToDouble(const std::string &str)
-{
-    return strtod(str.c_str(), nullptr);
-}
-
 std::shared_ptr<Node> NullNode::instance = std::make_shared<NullNode>();
 
 std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter) const

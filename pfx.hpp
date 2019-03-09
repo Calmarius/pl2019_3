@@ -6,7 +6,15 @@
 #include <fstream>
 #include <sstream>
 
-#include "common.hpp"
-#include "Input.hpp"
+#include "util.hpp"
+
+#include "Command.hpp"
+#include "NodeType.hpp"
+#include "Position.hpp"
+#include "Token.hpp"
+#include "NodeInfo.hpp"
+#include "ArgIterator.hpp"
 #include "Node.hpp"
+#include "Error.hpp"
+#include "Input.hpp"
 #include "Context.hpp"

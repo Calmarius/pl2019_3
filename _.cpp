@@ -1,3 +1,4 @@
+
 #include <stdarg.h>
 
 #include <fstream>
@@ -8,13 +9,24 @@
 #include <map>
 #include <stdexcept>
 
-#include "common.hpp"
+#include "util.hpp"
+
+#include "Command.hpp"
+#include "NodeType.hpp"
+#include "Position.hpp"
+#include "Token.hpp"
+#include "NodeInfo.hpp"
+#include "ArgIterator.hpp"
+#include "Error.hpp"
 #include "Input.hpp"
 #include "Context.hpp"
 #include "Node.hpp"
 
-#include "parsing.cpp"
 #include "util.cpp"
+
+#include "Input.cpp"
+#include "ArgIterator.cpp"
+#include "Error.cpp"
 #include "Context.cpp"
 #include "Node.cpp"
-#include "common.cpp"
+#include "Position.cpp"
