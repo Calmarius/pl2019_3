@@ -19,6 +19,12 @@ namespace error
         Typename(Position p) : Error(p, message) {} \
     };
 
+#define DECLARE_REASON_ERROR(Typename)            \
+    struct Typename : Error                         \
+    {                                               \
+        Typename(Position p, std::string msg) : Error(p, msg) {} \
+    };
+
 DECLARE_ERROR(NonExecutableNode, "This node cannot be executed.")
 DECLARE_ERROR(NotImplemented, "This functionality is not implemented for this class.")
 DECLARE_ERROR(InvalidOperation, "This operation shouldn't run on this class.")
@@ -26,12 +32,11 @@ DECLARE_ERROR(ClosingBraceWithoutOpeningOne, "You have a ')' but not the corresp
 DECLARE_ERROR(ClosingBraceExpected, "For forgot to close a '('.");
 DECLARE_ERROR(UndefinedCommand, "This command is undefined.");
 
-#undef DECLARE_ERROR
+DECLARE_REASON_ERROR(RuntimeError);
+DECLARE_REASON_ERROR(FailedToOpenFile);
 
-struct RuntimeError : Error
-{
-    RuntimeError(Position p, std::string msg) : Error(p, msg) {}
-};
+#undef DECLARE_ERROR
+#undef DECLARE_REASON_ERROR
 
 } // namespace error
 

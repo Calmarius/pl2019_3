@@ -16,4 +16,4 @@ $(PFX_LIB):
 sample: $(SRCS) $(PFX_LIB)
 	$(CXX) $(CXXFLAGS) _.cpp -iquote$(INCLUDE_DIR) $(PFX_LIB) -o $@
 
-.PHONY: all clean
+.PHONY: all clean $(PFX_LIB)

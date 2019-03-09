@@ -1,3 +1,5 @@
+.PHONY: all clean
+
 all:
 	$(MAKE) -C libpfx
 	$(MAKE) -C example

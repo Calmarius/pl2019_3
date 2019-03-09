@@ -23,11 +23,7 @@ namespace pfx
             inputStream = &sstream;
         }
 
-        Input(const char *file, int tabSize = 4) : fileStream(file), tabSize(tabSize)
-        {
-            inputStream = &fileStream;
-            fn = file;
-        }
+        Input(const char *file, int tabSize = 4);
 
         bool eof() { return inputStream->eof(); }
 
