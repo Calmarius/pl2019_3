@@ -5,6 +5,12 @@ std::string Position::toString()
     return ssprintf("%s %d:%d", fn, line, column);
 }
 
+void Position::raiseErrorHere(std::string errorMsg)
+{
+    throw error::RuntimeError(*this, errorMsg);
+}
+
+
 std::string Error::toString()
 {
     return ssprintf("%s: %s", position.toString().c_str(), reason.c_str());
@@ -16,9 +22,9 @@ std::shared_ptr<Node> ArgIterator::fetchNext()
     {
         return NullNode::instance;
     }
-    std::shared_ptr<Node> tmp = *current;
+    NodeInfo tmp = *current;
     current++;
-    return tmp;
+    return tmp.node;
 }
 
 std::shared_ptr<Node> ArgIterator::evaluateNext()
@@ -27,5 +33,9 @@ std::shared_ptr<Node> ArgIterator::evaluateNext()
 }
 
 ArgIterator::IteratorType ArgIterator::dummy;
+
+Position ArgIterator::getPosition() {return current->start;}
+std::shared_ptr<Node> ArgIterator::next() {return current->node;}
+
 
 } // namespace pfx

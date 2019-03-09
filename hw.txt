@@ -69,7 +69,6 @@ function square ( x ) ( ) ( * x x )
 
 println square square 3
 
-dump map fetch 2 4
 dump map fetch square list ( 1 2 3 4 5 6 7 )
 dump map fetch sqrt list ( 1 2 3 4 5 6 7 )
 

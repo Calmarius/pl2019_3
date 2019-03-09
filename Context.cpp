@@ -45,8 +45,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         if (*endptr == '\0')
         {
             std::shared_ptr<Node> newNode = std::make_shared<IntegerNode>(intValue);
-            newNode->setToken(token);
-            currentGroup->nodes.push_back(newNode);
+            currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
         }
 
@@ -54,8 +53,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         if (*endptr == '\0')
         {
             std::shared_ptr<Node> newNode = std::make_shared<FloatNode>(floatValue);
-            newNode->setToken(token);
-            currentGroup->nodes.push_back(newNode);
+            currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
         }
 
@@ -63,8 +61,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         {
             // New Group
             std::shared_ptr<GroupNode> gn = std::make_shared<GroupNode>();
-            gn->setToken(token);
-            currentGroup->nodes.push_back(std::static_pointer_cast<Node>(gn));
+            currentGroup->nodes.push_back(NodeInfo(gn, token));
             groupStack.push(gn);
             continue;
         }
@@ -72,20 +69,19 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         if (token.word == ")")
         {
             // Close current group
-            currentGroup->close(token);
             groupStack.pop();
             if (groupStack.size() == 0)
             {
                 throw error::ClosingBraceWithoutOpeningOne(token.start);
             }
+            groupStack.top()->nodes.back().end = token.end;
             continue;
         }
 
         if (token.quoted)
         {
             std::shared_ptr<Node> newNode = std::make_shared<StringNode>(token.word);
-            newNode->setToken(token);
-            currentGroup->nodes.push_back(std::static_pointer_cast<Node>(newNode));
+            currentGroup->nodes.push_back(NodeInfo(newNode, token));
         }
         else
         {
@@ -106,8 +102,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
                 newNode = cmd->second;
             }
 
-            newNode->setToken(token);
-            currentGroup->nodes.push_back(std::static_pointer_cast<Node>(newNode));
+            currentGroup->nodes.push_back(NodeInfo(newNode, token));
         }
     }
     if (groupStack.size() > 1)

@@ -16,7 +16,8 @@ void GroupNode::dumpPart(int indent)
     printf("(\n");
     for (unsigned i = 0; i < nodes.size(); i++)
     {
-        nodes[i]->dump(indent + 1);
+        NodeInfo &current = nodes[i];
+        current.node->dump(indent + 1);
     }
     dumpIndent(indent);
     printf(")\n");
@@ -27,7 +28,7 @@ std::string GroupNode::toString()
     std::string str;
     for (auto childNode : nodes)
     {
-        str += childNode->toString();
+        str += childNode.node->toString();
     }
     return str;
 }
@@ -59,7 +60,7 @@ std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
         try
         {
             ArgIterator iter(i, end);
-            resultNode = (i++)->get()->evaluate(iter);
+            resultNode = (i++)->node->evaluate(iter);
         }
         catch (Error e)
         {
@@ -78,7 +79,7 @@ std::shared_ptr<GroupNode> GroupNode::evaluateAll() const
     {
         ArgIterator tmp(i, end);
 
-        newGroupNode->nodes.push_back((i++)->get()->evaluate(tmp));
+        newGroupNode->nodes.push_back((i++)->node->evaluate(tmp));
     }
     return newGroupNode;
 }

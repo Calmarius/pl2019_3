@@ -8,6 +8,8 @@ struct Position
     int line;       ///< The line in the file.
 
     std::string toString();
+
+    void raiseErrorHere(std::string errorMsg);
 };
 
 struct Error
@@ -65,11 +67,12 @@ enum class NodeType
 };
 
 struct Node;
+struct NodeInfo;
 
 class ArgIterator
 {
   private:
-    typedef std::vector<std::shared_ptr<Node>>::const_iterator IteratorType;
+    typedef std::vector<NodeInfo>::const_iterator IteratorType;
     IteratorType &current;
     IteratorType end;
 
@@ -79,7 +82,8 @@ class ArgIterator
     ArgIterator() : current(dummy), end(dummy) {}
     ArgIterator(IteratorType &current, IteratorType end) : current(current), end(end) {}
 
-    std::shared_ptr<Node> next() {return *current;}
+    Position getPosition();
+    std::shared_ptr<Node> next();
     std::shared_ptr<Node> evaluateNext();
     std::shared_ptr<Node> fetchNext();
     bool ended() { return current == end; }

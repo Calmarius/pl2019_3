@@ -7,17 +7,8 @@ using CommandRef = std::shared_ptr<Command>;
 
 struct Node
 {
-    Position start = Position();
-    Position end = Position();
-
     Node()
     {
-    }
-
-    void setToken(Token t)
-    {
-        start = t.start;
-        end = t.end;
     }
 
     virtual ~Node() {}
@@ -48,11 +39,6 @@ struct Node
     virtual double toDouble() = 0;
 
     virtual NodeType getType() = 0;
-
-    void raiseError(std::string message)
-    {
-        throw error::RuntimeError(start, message);
-    }
 };
 
 struct IntegerNode : Node
@@ -168,19 +154,36 @@ struct StringNode : Node
     };
 };
 
-struct GroupNode : Node
+struct NodeInfo
 {
-    using Node::evaluate;
-    std::vector<std::shared_ptr<Node>> nodes;
+    Position start = Position();
+    Position end = Position();
+    std::shared_ptr<Node> node;
 
-    std::string toString() override;
-    int toInteger() override { return stringToInteger(toString()); }
-    double toDouble() override { return stringToDouble(toString()); }
+    NodeInfo(std::shared_ptr<Node> n) : node(n) {}
+
+    NodeInfo(std::shared_ptr<Node> n, Token t) : start(t.start), end(t.end), node(n) {}
+
+    void setToken(Token t)
+    {
+        start = t.start;
+        end = t.end;
+    }
 
     void close(Token t)
     {
         end = t.end;
     }
+};
+
+struct GroupNode : Node
+{
+    using Node::evaluate;
+    std::vector<NodeInfo> nodes;
+
+    std::string toString() override;
+    int toInteger() override { return stringToInteger(toString()); }
+    double toDouble() override { return stringToDouble(toString()); }
 
     void dumpPart(int indent) override;
 
