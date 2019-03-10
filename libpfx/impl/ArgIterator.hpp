@@ -6,9 +6,7 @@ namespace pfx
 struct Node;
 struct NodeInfo;
 
-/**
- * This class is used to iterate on the command node's arguments.
- */
+/// This class is used to iterate on the command node's arguments.
 class ArgIterator
 {
 private:

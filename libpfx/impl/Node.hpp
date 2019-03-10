@@ -1,40 +1,93 @@
+/// @file Node.hpp Contains definition of Node and its descendants.
+
 namespace pfx
 {
 struct Node;
+/// Shorthand for the node references.
 using NodeRef = std::shared_ptr<Node>;
 
-struct Node
+/// Defines a node, the basic building block of the langage.
+class Node
 {
-    Node()
-    {
-    }
-
+protected:
+    /** Used internally to dump indents.
+     *
+     * @param [in] indent Prints 4×indent spaces.
+     */
     void dumpIndent(int indent)
     {
         printf("%*s", indent * 4, "");
     }
 
+public:
+    /// Default constructor does nothing.
+    Node()
+    {
+    }
+
+    /// Default destructor does nothing.
     virtual ~Node()
     {
     }
 
-    virtual void dump(int /*indent*/ = 0)
+    /**
+     * Dumps the contents of the node, for debugging purposes.
+     *
+     * @param [in] indent specifies the indent level (for multi line dumps
+     * only).
+     */
+    virtual void dump(int indent = 0)
     {
+        (void)indent;
         printf("(none)");
     };
 
+    /**
+     * Iteratorless node evaluation.
+     *
+     * @return Reference to the result node.
+     *
+     * @remarks
+     * When called on a node that do uses an iterator. The iterator will return
+     * references to NullNode.
+     */
     std::shared_ptr<Node> evaluate()
     {
         ArgIterator tmp;
         return evaluate(tmp);
     }
 
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const = 0;
+    /**
+     * Evaluates a node.
+     *
+     * @param [in] iter An iterator the implemenation may use to read further
+     * arguments.
+     *
+     * @return The node representing the result.
+     */
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &iter) const = 0;
 
+    /**
+     * @return string value from the node. The behavior is imlementation
+     * defined.
+     */
     virtual std::string toString() = 0;
+
+    /**
+     * @return string value from the node. The behavior is imlementation
+     * defined.
+     */
     virtual int toInteger() = 0;
+
+    /**
+     * @return string value from the node. The behavior is imlementation
+     * defined.
+     */
     virtual double toDouble() = 0;
 
+    /**
+     * @return The type of the node.
+     */
     virtual NodeType getType() = 0;
 };
 
