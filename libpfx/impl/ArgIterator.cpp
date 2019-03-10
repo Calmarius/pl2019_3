@@ -25,6 +25,10 @@ Position ArgIterator::getPosition()
 
 std::shared_ptr<Node> ArgIterator::next()
 {
+    if (current == end)
+    {
+        return NullNode::instance;
+    }
     return current->node;
 }
 

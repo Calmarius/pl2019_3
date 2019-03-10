@@ -25,4 +25,18 @@ int main()
         pfx::Context ctx;
         pfx::NodeRef gn = ctx.compileCode(input);
     }
+
+    {
+        printf("Dummy iterator\n");
+        pfx::ArgIterator iter;
+
+        assert(dynamic_cast<pfx::NullNode *>(iter.fetchNext().get()));
+    }
+
+    {
+        printf("Dummy iterator next\n");
+        pfx::ArgIterator iter;
+
+        assert(dynamic_cast<pfx::NullNode *>(iter.next().get()));
+    }
 }
