@@ -14,9 +14,14 @@ struct Node
         printf("%*s", indent * 4, "");
     }
 
-    virtual ~Node() {}
+    virtual ~Node()
+    {
+    }
 
-    virtual void dump(int /*indent*/=0) {printf("(none)");};
+    virtual void dump(int /*indent*/ = 0)
+    {
+        printf("(none)");
+    };
 
     std::shared_ptr<Node> evaluate()
     {
@@ -39,15 +44,23 @@ struct IntegerNode : Node
 
     const int value;
 
-    IntegerNode(int value) : value(value) {}
+    IntegerNode(int value) : value(value)
+    {
+    }
     void dump(int /*indent*/) override
     {
         printf("Integer: %d", value);
     }
 
     std::string toString() override;
-    int toInteger() override { return value; }
-    double toDouble() override { return value; }
+    int toInteger() override
+    {
+        return value;
+    }
+    double toDouble() override
+    {
+        return value;
+    }
 
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
@@ -65,7 +78,9 @@ struct FloatNode : Node
     using Node::evaluate;
     const double value;
 
-    FloatNode(double value) : value(value) {}
+    FloatNode(double value) : value(value)
+    {
+    }
 
     void dump(int /*indent*/) override
     {
@@ -73,8 +88,14 @@ struct FloatNode : Node
     }
 
     std::string toString() override;
-    int toInteger() override { return value; }
-    double toDouble() override { return value; }
+    int toInteger() override
+    {
+        return value;
+    }
+    double toDouble() override
+    {
+        return value;
+    }
 
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
@@ -93,9 +114,12 @@ struct CommandNode : Node
     std::shared_ptr<Command> command;
     std::string prettyName;
 
-    CommandNode(std::shared_ptr<Command> cmd) : command(cmd) {}
+    CommandNode(std::shared_ptr<Command> cmd) : command(cmd)
+    {
+    }
 
-    CommandNode(std::shared_ptr<Command> cmd, std::string name) : CommandNode(cmd)
+    CommandNode(std::shared_ptr<Command> cmd, std::string name)
+        : CommandNode(cmd)
     {
         prettyName = name;
     }
@@ -105,9 +129,18 @@ struct CommandNode : Node
         printf("Command: %s", prettyName.c_str());
     }
 
-    std::string toString() override { return prettyName; }
-    int toInteger() override { return stringToInteger(prettyName); }
-    double toDouble() override { return stringToDouble(prettyName); }
+    std::string toString() override
+    {
+        return prettyName;
+    }
+    int toInteger() override
+    {
+        return stringToInteger(prettyName);
+    }
+    double toDouble() override
+    {
+        return stringToDouble(prettyName);
+    }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
 
@@ -121,11 +154,22 @@ struct StringNode : Node
 {
     using Node::evaluate;
     const std::string value;
-    StringNode(std::string value) : value(value) {}
+    StringNode(std::string value) : value(value)
+    {
+    }
 
-    std::string toString() override { return value; }
-    int toInteger() override { return stringToInteger(value); }
-    double toDouble() override { return stringToDouble(value); }
+    std::string toString() override
+    {
+        return value;
+    }
+    int toInteger() override
+    {
+        return stringToInteger(value);
+    }
+    double toDouble() override
+    {
+        return stringToDouble(value);
+    }
 
     void dump(int /*indent*/) override
     {
@@ -149,8 +193,14 @@ struct GroupNode : Node
     std::vector<NodeInfo> nodes;
 
     std::string toString() override;
-    int toInteger() override { return stringToInteger(toString()); }
-    double toDouble() override { return stringToDouble(toString()); }
+    int toInteger() override
+    {
+        return stringToInteger(toString());
+    }
+    double toDouble() override
+    {
+        return stringToDouble(toString());
+    }
 
     void dump(int indent) override;
 
@@ -167,9 +217,18 @@ struct GroupNode : Node
 struct NullNode : Node
 {
     using Node::evaluate;
-    std::string toString() override { return "null"; }
-    int toInteger() override { return 0; }
-    double toDouble() override { return 0; }
+    std::string toString() override
+    {
+        return "null";
+    }
+    int toInteger() override
+    {
+        return 0;
+    }
+    double toDouble() override
+    {
+        return 0;
+    }
 
     static std::shared_ptr<Node> instance;
 

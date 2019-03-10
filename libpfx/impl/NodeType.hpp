@@ -11,5 +11,4 @@ enum class NodeType
     Group,         ///< Group of nodes
     Null           ///< Unknown node
 };
-
 }

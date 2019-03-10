@@ -8,8 +8,13 @@ struct Token
     std::string word;
     bool quoted;
 
-    Token() {}
+    Token()
+    {
+    }
 
-    Token(std::string str) : word(str) { quoted = true; }
+    Token(std::string str) : word(str)
+    {
+        quoted = true;
+    }
 };
 } // namespace pfx

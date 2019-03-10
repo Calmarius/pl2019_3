@@ -19,13 +19,16 @@ struct UndefinedCommand : Command
 {
     Position pos;
 
-    UndefinedCommand(Position pos) : pos(pos) {}
+    UndefinedCommand(Position pos) : pos(pos)
+    {
+    }
 
     NodeRef execute(ArgIterator &) override
     {
         throw error::UndefinedCommand(pos);
     }
 };
+
 
 std::shared_ptr<GroupNode> Context::compileCode(Input &input)
 {
@@ -44,7 +47,8 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         int intValue = strtol(token.word.c_str(), &endptr, 10);
         if (*endptr == '\0')
         {
-            std::shared_ptr<Node> newNode = std::make_shared<IntegerNode>(intValue);
+            std::shared_ptr<Node> newNode =
+                std::make_shared<IntegerNode>(intValue);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
         }
@@ -52,7 +56,8 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         double floatValue = strtod(token.word.c_str(), &endptr);
         if (*endptr == '\0')
         {
-            std::shared_ptr<Node> newNode = std::make_shared<FloatNode>(floatValue);
+            std::shared_ptr<Node> newNode =
+                std::make_shared<FloatNode>(floatValue);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
         }
@@ -80,7 +85,8 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
 
         if (token.quoted)
         {
-            std::shared_ptr<Node> newNode = std::make_shared<StringNode>(token.word);
+            std::shared_ptr<Node> newNode =
+                std::make_shared<StringNode>(token.word);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
         }
         else
@@ -90,12 +96,16 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
             std::shared_ptr<Node> newNode;
             if (cmd == commands.end())
             {
-                std::shared_ptr<CommandNode> tmp = std::make_shared<CommandNode>(std::make_shared<UndefinedCommand>(token.start), token.word);
+                std::shared_ptr<CommandNode> tmp =
+                    std::make_shared<CommandNode>(
+                        std::make_shared<UndefinedCommand>(token.start),
+                        token.word);
                 commands[token.word] = tmp;
                 newNode = tmp;
 
-                /*printf("%s: %s is a string node.\n", token.start.toString().c_str(), token.word.c_str());
-                newNode = std::make_shared<StringNode>(token.word);*/
+                /*printf("%s: %s is a string node.\n",
+                token.start.toString().c_str(), token.word.c_str()); newNode =
+                std::make_shared<StringNode>(token.word);*/
             }
             else
             {
@@ -110,10 +120,11 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         throw error::ClosingBraceExpected(token.start);
     }
 
-    //groupStack.top()->dump();
+    // groupStack.top()->dump();
 
     return std::shared_ptr<GroupNode>(groupStack.top());
 }
+
 
 std::shared_ptr<Command> Context::getCommand(std::string name)
 {

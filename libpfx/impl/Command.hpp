@@ -1,13 +1,15 @@
 namespace pfx
 {
-    class Node;
-    class ArgIterator;
-    class Command;
-    using CommandRef = std::shared_ptr<Command>;
+class Node;
+class ArgIterator;
+class Command;
+using CommandRef = std::shared_ptr<Command>;
 
-    struct Command
+struct Command
+{
+    virtual std::shared_ptr<Node> execute(ArgIterator &) = 0;
+    virtual ~Command()
     {
-        virtual std::shared_ptr<Node> execute(ArgIterator &) = 0;
-        virtual ~Command() {}
-    };
-}
+    }
+};
+} // namespace pfx

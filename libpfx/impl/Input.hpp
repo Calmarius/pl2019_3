@@ -1,39 +1,47 @@
 namespace pfx
 {
-    class Input
+class Input
+{
+    std::ifstream fileStream;
+    std::istream *inputStream;
+    std::stringstream sstream;
+    const char *fn;
+    int column = 0;
+    int crCount = 0;
+    int lfCount = 0;
+    int tabSize;
+
+public:
+    bool fail()
     {
-        std::ifstream fileStream;
-        std::istream *inputStream;
-        std::stringstream sstream;
-        const char *fn;
-        int column = 0;
-        int crCount = 0;
-        int lfCount = 0;
-        int tabSize;
+        return inputStream->fail();
+    }
 
-      public:
-        bool fail()
-        {
-            return inputStream->fail();
-        }
+    Input(const char *filename, std::string source, int tabSize = 4)
+        : sstream(source), tabSize(tabSize)
+    {
+        fn = filename;
+        inputStream = &sstream;
+    }
 
-        Input(const char *filename, std::string source, int tabSize = 4) : sstream(source), tabSize(tabSize)
-        {
-            fn = filename;
-            inputStream = &sstream;
-        }
+    Input(const char *file, int tabSize = 4);
 
-        Input(const char *file, int tabSize = 4);
+    bool eof()
+    {
+        return inputStream->eof();
+    }
 
-        bool eof() { return inputStream->eof(); }
+    int peek()
+    {
+        return inputStream->peek();
+    }
 
-        int peek() { return inputStream->peek(); }
+    int get();
 
-        int get();
-
-        Position getPosition()
-        {
-            return Position{fn, column + 1, crCount > lfCount ? crCount + 1 : lfCount + 1};
-        }
-    };
-}
+    Position getPosition()
+    {
+        return Position{fn, column + 1,
+                        crCount > lfCount ? crCount + 1 : lfCount + 1};
+    }
+};
+} // namespace pfx

@@ -45,11 +45,14 @@ struct AddCommand : pfx::Command
         switch (arg1->getType())
         {
         case pfx::NodeType::Integer:
-            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() + arg2->toInteger());
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() +
+                                                      arg2->toInteger());
         case pfx::NodeType::FloatingPoint:
-            return std::make_shared<pfx::FloatNode>(arg1->toDouble() + arg2->toDouble());
+            return std::make_shared<pfx::FloatNode>(arg1->toDouble() +
+                                                    arg2->toDouble());
         default:
-            return std::make_shared<pfx::StringNode>(arg1->toString() + arg2->toString());
+            return std::make_shared<pfx::StringNode>(arg1->toString() +
+                                                     arg2->toString());
         }
     }
 };
@@ -69,9 +72,11 @@ struct SubCommand : pfx::Command
         switch (arg1->getType())
         {
         case pfx::NodeType::Integer:
-            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() - arg2->toInteger());
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() -
+                                                      arg2->toInteger());
         case pfx::NodeType::FloatingPoint:
-            return std::make_shared<pfx::FloatNode>(arg1->toDouble() - arg2->toDouble());
+            return std::make_shared<pfx::FloatNode>(arg1->toDouble() -
+                                                    arg2->toDouble());
         default:
             return pfx::NullNode::instance;
         }
@@ -93,9 +98,11 @@ struct MultiplyCommand : pfx::Command
         switch (arg1->getType())
         {
         case pfx::NodeType::Integer:
-            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() * arg2->toInteger());
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() *
+                                                      arg2->toInteger());
         case pfx::NodeType::FloatingPoint:
-            return std::make_shared<pfx::FloatNode>(arg1->toDouble() * arg2->toDouble());
+            return std::make_shared<pfx::FloatNode>(arg1->toDouble() *
+                                                    arg2->toDouble());
         default:
             return pfx::NullNode::instance;
         }
@@ -117,9 +124,11 @@ struct DivideCommand : pfx::Command
         switch (arg1->getType())
         {
         case pfx::NodeType::Integer:
-            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() / arg2->toInteger());
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() /
+                                                      arg2->toInteger());
         case pfx::NodeType::FloatingPoint:
-            return std::make_shared<pfx::FloatNode>(arg1->toDouble() / arg2->toDouble());
+            return std::make_shared<pfx::FloatNode>(arg1->toDouble() /
+                                                    arg2->toDouble());
         default:
             return pfx::NullNode::instance;
         }
@@ -141,11 +150,14 @@ struct LessCommand : pfx::Command
         switch (arg1->getType())
         {
         case pfx::NodeType::Integer:
-            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() < arg2->toInteger());
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() <
+                                                      arg2->toInteger());
         case pfx::NodeType::FloatingPoint:
-            return std::make_shared<pfx::IntegerNode>(arg1->toDouble() < arg2->toDouble());
+            return std::make_shared<pfx::IntegerNode>(arg1->toDouble() <
+                                                      arg2->toDouble());
         case pfx::NodeType::String:
-            return std::make_shared<pfx::IntegerNode>(arg1->toString() < arg2->toString());
+            return std::make_shared<pfx::IntegerNode>(arg1->toString() <
+                                                      arg2->toString());
         default:
             return pfx::NullNode::instance;
         }
@@ -190,8 +202,7 @@ struct ListCommand : pfx::Command
 
         pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode *>(arg.get());
 
-        if (gn)
-            return gn->evaluateAll();
+        if (gn) return gn->evaluateAll();
 
         return arg;
     }
@@ -201,9 +212,13 @@ struct ContainerCommand : pfx::Command
 {
     pfx::NodeRef ref;
 
-    ContainerCommand() : ContainerCommand(pfx::NullNode::instance) {}
+    ContainerCommand() : ContainerCommand(pfx::NullNode::instance)
+    {
+    }
 
-    ContainerCommand(pfx::NodeRef ref) : ref(ref) {}
+    ContainerCommand(pfx::NodeRef ref) : ref(ref)
+    {
+    }
 
     pfx::NodeRef execute(pfx::ArgIterator &) override
     {
@@ -219,10 +234,11 @@ struct LetCommand : pfx::Command
         pfx::NodeRef value = iter.evaluateNext();
 
         pfx::Position pos = iter.getPosition();
-        pfx::CommandNode *cmd = dynamic_cast<pfx::CommandNode *>(variable.get());
-        if (!cmd)
-            pos.raiseErrorHere("This is not a variable!");
-        ContainerCommand *varContainer = dynamic_cast<ContainerCommand *>(cmd->command.get());
+        pfx::CommandNode *cmd =
+            dynamic_cast<pfx::CommandNode *>(variable.get());
+        if (!cmd) pos.raiseErrorHere("This is not a variable!");
+        ContainerCommand *varContainer =
+            dynamic_cast<ContainerCommand *>(cmd->command.get());
         if (!varContainer)
         {
             auto tmp = std::make_shared<ContainerCommand>();
@@ -352,7 +368,8 @@ struct FunctionRunner : pfx::Command
     std::vector<pfx::CommandRef> savedLocals;
     pfx::NodeRef body;
 
-    FunctionRunner(pfx::NodeRef args, pfx::NodeRef locals, pfx::NodeRef body) : args(args), locals(locals), body(body)
+    FunctionRunner(pfx::NodeRef args, pfx::NodeRef locals, pfx::NodeRef body)
+        : args(args), locals(locals), body(body)
     {
     }
 
@@ -361,17 +378,21 @@ struct FunctionRunner : pfx::Command
         savedArgs.clear();
         savedLocals.clear();
 
-        // Save previous meanings of the formal arguments and locals and override them with new meanings.
+        // Save previous meanings of the formal arguments and locals and
+        // override them with new meanings.
         for (auto &x : dynamic_cast<pfx::GroupNode *>(args.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.node.get());
+            pfx::CommandNode *cn =
+                dynamic_cast<pfx::CommandNode *>(x.node.get());
             savedArgs.push_back(cn->command);
-            cn->command = std::make_shared<ContainerCommand>(iter.evaluateNext());
+            cn->command =
+                std::make_shared<ContainerCommand>(iter.evaluateNext());
         }
 
         for (auto &x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.node.get());
+            pfx::CommandNode *cn =
+                dynamic_cast<pfx::CommandNode *>(x.node.get());
             savedLocals.push_back(cn->command);
             cn->command = std::make_shared<ContainerCommand>();
         }
@@ -383,14 +404,16 @@ struct FunctionRunner : pfx::Command
         int i = 0;
         for (auto &x : dynamic_cast<pfx::GroupNode *>(args.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.node.get());
+            pfx::CommandNode *cn =
+                dynamic_cast<pfx::CommandNode *>(x.node.get());
             cn->command = savedArgs[i++];
         }
 
         i = 0;
         for (auto &x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.node.get());
+            pfx::CommandNode *cn =
+                dynamic_cast<pfx::CommandNode *>(x.node.get());
             cn->command = savedLocals[i++];
         }
 
@@ -409,21 +432,24 @@ struct FunctionCommand : pfx::Command
         pfx::NodeRef bodyRef = iter.fetchNext();
 
         pfx::Position pos = iter.getPosition();
-        pfx::CommandNode *fName = dynamic_cast<pfx::CommandNode *>(fNameRef.get());
+        pfx::CommandNode *fName =
+            dynamic_cast<pfx::CommandNode *>(fNameRef.get());
         if (!fName)
         {
             pos.raiseErrorHere("Identifier expected.");
         }
 
         pos = iter.getPosition();
-        pfx::GroupNode *argsGroup = dynamic_cast<pfx::GroupNode *>(argsGroupRef.get());
+        pfx::GroupNode *argsGroup =
+            dynamic_cast<pfx::GroupNode *>(argsGroupRef.get());
         if (!argsGroup)
         {
             pos.raiseErrorHere("Group node expected (for arguments)");
         }
 
         pos = iter.getPosition();
-        pfx::GroupNode *locals = dynamic_cast<pfx::GroupNode *>(localsRef.get());
+        pfx::GroupNode *locals =
+            dynamic_cast<pfx::GroupNode *>(localsRef.get());
         if (!locals)
         {
             pos.raiseErrorHere("Group node expected (for locals) ");
@@ -451,7 +477,8 @@ struct FunctionCommand : pfx::Command
             }
         }
 
-        fName->command = std::make_shared<FunctionRunner>(argsGroupRef, localsRef, bodyRef);
+        fName->command =
+            std::make_shared<FunctionRunner>(argsGroupRef, localsRef, bodyRef);
 
         return pfx::NullNode::instance;
     }
@@ -489,18 +516,21 @@ struct MapCommand : pfx::Command
         pfx::Position groupPos = iter.getPosition();
         pfx::NodeRef groupNode = iter.evaluateNext();
 
-        pfx::CommandNode *mapFn = dynamic_cast<pfx::CommandNode *>(mapNode.get());
+        pfx::CommandNode *mapFn =
+            dynamic_cast<pfx::CommandNode *>(mapNode.get());
         if (!mapFn)
         {
             mapPos.raiseErrorHere("Command node expected.");
         }
-        const pfx::GroupNode *group = dynamic_cast<pfx::GroupNode *>(groupNode.get());
+        const pfx::GroupNode *group =
+            dynamic_cast<pfx::GroupNode *>(groupNode.get());
         if (!group)
         {
             groupPos.raiseErrorHere("Group node expected");
         }
 
-        std::shared_ptr<pfx::GroupNode> newGroup = std::make_shared<pfx::GroupNode>();
+        std::shared_ptr<pfx::GroupNode> newGroup =
+            std::make_shared<pfx::GroupNode>();
 
         auto begin = group->nodes.begin();
         pfx::ArgIterator groupIter(begin, group->nodes.end());

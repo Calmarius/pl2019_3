@@ -18,7 +18,14 @@ std::shared_ptr<Node> ArgIterator::evaluateNext()
 
 ArgIterator::IteratorType ArgIterator::dummy;
 
-Position ArgIterator::getPosition() {return current->start;}
-std::shared_ptr<Node> ArgIterator::next() {return current->node;}
-
+Position ArgIterator::getPosition()
+{
+    return current->start;
 }
+
+std::shared_ptr<Node> ArgIterator::next()
+{
+    return current->node;
+}
+
+} // namespace pfx

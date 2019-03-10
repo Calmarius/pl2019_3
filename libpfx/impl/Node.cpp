@@ -1,15 +1,18 @@
 namespace pfx
 {
 
+
 std::string IntegerNode::toString()
 {
     return ssprintf("%d", value);
 }
 
+
 std::string FloatNode::toString()
 {
     return ssprintf("%g", value);
 }
+
 
 void GroupNode::dump(int indent)
 {
@@ -19,12 +22,14 @@ void GroupNode::dump(int indent)
         NodeInfo &current = nodes[i];
         dumpIndent(indent + 1);
         current.node->dump(indent + 1);
-        //printf(" %s-%s\n", current.start.toString().c_str(), current.end.toString().c_str());
+        // printf(" %s-%s\n", current.start.toString().c_str(),
+        // current.end.toString().c_str());
         printf("\n");
     }
     dumpIndent(indent);
     printf(")");
 }
+
 
 std::string GroupNode::toString()
 {
@@ -36,12 +41,15 @@ std::string GroupNode::toString()
     return str;
 }
 
+
 std::shared_ptr<Node> NullNode::instance = std::make_shared<NullNode>();
+
 
 std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter) const
 {
     return command->execute(hIter);
 }
+
 
 std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
 {
@@ -62,6 +70,7 @@ std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
     }
     return resultNode;
 }
+
 
 std::shared_ptr<GroupNode> GroupNode::evaluateAll() const
 {
