@@ -91,7 +91,7 @@ public:
     virtual NodeType getType() = 0;
 };
 
-/// This node represents an integer value. It's immutable.
+/// This node represents an immutable integer value.
 struct IntegerNode : Node
 {
     using Node::evaluate;
@@ -115,7 +115,7 @@ struct IntegerNode : Node
     }
 
     /**
-     *  Converts the integer value to a string. Using the %d format specifier.
+     *  Converts the integer value to a string. Using the %%d format specifier.
      *
      * @return The string representation.
      */
@@ -154,11 +154,19 @@ struct IntegerNode : Node
     };
 };
 
+/// This node represents an immutable floating point value
 struct FloatNode : Node
 {
     using Node::evaluate;
+
+    /// The stored value itself.
     const double value;
 
+    /**
+     * Constructs a new float node.
+     *
+     * @param [in] value The value to store.
+     */
     FloatNode(double value) : value(value)
     {
     }
@@ -168,21 +176,40 @@ struct FloatNode : Node
         printf("Float: %g", value);
     }
 
+    /**
+     * @return The string representation of the stored value. It is generated
+     * according to the %%g printf format.
+     *
+     */
     std::string toString() override;
+
+    /**
+     *  @return The value converted to integer.
+     */
     int toInteger() override
     {
         return value;
     }
+
+    /**
+     * @return The stored value itself.
+     */
     double toDouble() override
     {
         return value;
     }
 
+    /**
+     * @return a copy of this node.
+     */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
         return std::make_shared<FloatNode>(*this);
     }
 
+    /**
+     * @return NodeType::FloatingPoint
+     */
     virtual NodeType getType()
     {
         return NodeType::FloatingPoint;
