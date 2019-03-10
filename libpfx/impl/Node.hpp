@@ -91,35 +91,63 @@ public:
     virtual NodeType getType() = 0;
 };
 
+/// This node represents an integer value. It's immutable.
 struct IntegerNode : Node
 {
     using Node::evaluate;
 
+    /// The stored value.
     const int value;
 
+    /**
+     * Creates an integer node with the given value.
+     *
+     * @param [in] value The value to store.
+     */
     IntegerNode(int value) : value(value)
     {
     }
+
+
     void dump(int /*indent*/) override
     {
         printf("Integer: %d", value);
     }
 
+    /**
+     *  Converts the integer value to a string. Using the %d format specifier.
+     *
+     * @return The string representation.
+     */
     std::string toString() override;
+
+    /**
+     * @return The value itself.
+     */
     int toInteger() override
     {
         return value;
     }
+
+    /**
+     * @return The value itself converted to double.
+     */
     double toDouble() override
     {
         return value;
     }
 
+    /**
+     * Returns a copy of itself.
+     */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
         return std::make_shared<IntegerNode>(*this);
     }
 
+    /**
+     * @return NodeType::Integer
+     */
     NodeType getType() override
     {
         return NodeType::Integer;
