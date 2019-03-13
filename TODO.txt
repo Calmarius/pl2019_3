@@ -1,4 +1,6 @@
-Despite the fact all command nodes are equal, the positions are different. There must be a way to handle this somehow.
+- There is no point in converting command and group nodes to numbers. They should return 0.
+
+- The empty throws are now useless.
 
 
 
