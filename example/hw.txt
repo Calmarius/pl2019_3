@@ -22,7 +22,7 @@ while ( < x 10 )
 
 // (
     print "Enter number: "
-    
+
     let x int readline
     if < x 500
     (
@@ -32,6 +32,9 @@ while ( < x 10 )
         println "It's greater than 500."
     )
 )
+
+// "Returns a list with the solutions
+    empty list when there are no solutions."
 
 function solveQuadratic ( a b c ) ( d x1 x2 )
 (
@@ -73,5 +76,5 @@ dump map fetch square list ( 1 2 3 4 5 6 7 )
 dump map fetch sqrt list ( 1 2 3 4 5 6 7 )
 
 
- 
+
 
