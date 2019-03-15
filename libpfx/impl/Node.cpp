@@ -58,15 +58,8 @@ std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
 
     for (auto i = nodes.begin(); i != nodes.end();)
     {
-        try
-        {
-            ArgIterator iter(i, end);
-            resultNode = (i++)->node->evaluate(iter);
-        }
-        catch (Error e)
-        {
-            throw;
-        }
+        ArgIterator iter(i, end);
+        resultNode = (i++)->node->evaluate(iter);
     }
     return resultNode;
 }
