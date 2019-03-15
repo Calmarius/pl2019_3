@@ -295,11 +295,18 @@ struct StringNode : Node
     };
 };
 
+/// Represents a node that can contain more child nodes
 struct GroupNode : Node
 {
     using Node::evaluate;
+    /// Contains references to nodes and their metadata.
     std::vector<NodeInfo> nodes;
 
+    /**
+     * Gets the string representation of all child nodes and concatenate them.
+     *
+     * @return The concatenated result.
+     */
     std::string toString() override;
     int toInteger() override
     {
