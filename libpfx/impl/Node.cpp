@@ -2,24 +2,24 @@ namespace pfx
 {
 
 
-std::string IntegerNode::toString()
+std::string IntegerNode::toString() const
 {
     return ssprintf("%d", value);
 }
 
 
-std::string FloatNode::toString()
+std::string FloatNode::toString() const
 {
     return ssprintf("%g", value);
 }
 
 
-void GroupNode::dump(int indent)
+void GroupNode::dump(int indent) const
 {
     printf("(\n");
     for (unsigned i = 0; i < nodes.size(); i++)
     {
-        NodeInfo &current = nodes[i];
+        const NodeInfo &current = nodes[i];
         dumpIndent(indent + 1);
         current.node->dump(indent + 1);
         // printf(" %s-%s\n", current.start.toString().c_str(),
@@ -31,7 +31,7 @@ void GroupNode::dump(int indent)
 }
 
 
-std::string GroupNode::toString()
+std::string GroupNode::toString() const
 {
     std::string str;
     for (auto childNode : nodes)

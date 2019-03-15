@@ -14,7 +14,7 @@ protected:
      *
      * @param [in] indent Prints 4 × indent spaces.
      */
-    void dumpIndent(int indent)
+    void dumpIndent(int indent) const
     {
         printf("%*s", indent * 4, "");
     }
@@ -36,7 +36,7 @@ public:
      * @param [in] indent specifies the indent level (for multi line dumps
      * only).
      */
-    virtual void dump(int indent = 0)
+    virtual void dump(int indent = 0) const
     {
         (void)indent;
         printf("(none)");
@@ -71,24 +71,24 @@ public:
      * @return string value from the node. The behavior is implementation
      * defined.
      */
-    virtual std::string toString() = 0;
+    virtual std::string toString() const = 0;
 
     /**
      * @return string value from the node. The behavior is implementation
      * defined.
      */
-    virtual int toInteger() = 0;
+    virtual int toInteger() const = 0;
 
     /**
      * @return string value from the node. The behavior is implementation
      * defined.
      */
-    virtual double toDouble() = 0;
+    virtual double toDouble() const = 0;
 
     /**
      * @return The type of the node.
      */
-    virtual NodeType getType() = 0;
+    virtual NodeType getType() const = 0;
 };
 
 /// This node represents an immutable integer value.
@@ -109,7 +109,7 @@ struct IntegerNode : Node
     }
 
 
-    void dump(int /*indent*/) override
+    void dump(int /*indent*/) const override
     {
         printf("Integer: %d", value);
     }
@@ -119,12 +119,12 @@ struct IntegerNode : Node
      *
      * @return The string representation.
      */
-    std::string toString() override;
+    std::string toString() const override;
 
     /**
      * @return The value itself.
      */
-    int toInteger() override
+    int toInteger() const override
     {
         return value;
     }
@@ -132,7 +132,7 @@ struct IntegerNode : Node
     /**
      * @return The value itself converted to double.
      */
-    double toDouble() override
+    double toDouble() const override
     {
         return value;
     }
@@ -148,7 +148,7 @@ struct IntegerNode : Node
     /**
      * @return NodeType::Integer
      */
-    NodeType getType() override
+    NodeType getType() const override
     {
         return NodeType::Integer;
     };
@@ -171,7 +171,7 @@ struct FloatNode : Node
     {
     }
 
-    void dump(int /*indent*/) override
+    void dump(int /*indent*/) const override
     {
         printf("Float: %g", value);
     }
@@ -181,12 +181,12 @@ struct FloatNode : Node
      * according to the %%g printf format.
      *
      */
-    std::string toString() override;
+    std::string toString() const override;
 
     /**
      *  @return The value converted to integer.
      */
-    int toInteger() override
+    int toInteger() const override
     {
         return value;
     }
@@ -194,7 +194,7 @@ struct FloatNode : Node
     /**
      * @return The stored value itself.
      */
-    double toDouble() override
+    double toDouble() const override
     {
         return value;
     }
@@ -210,7 +210,7 @@ struct FloatNode : Node
     /**
      * @return NodeType::FloatingPoint
      */
-    virtual NodeType getType()
+    NodeType getType() const override
     {
         return NodeType::FloatingPoint;
     };
@@ -232,27 +232,27 @@ struct CommandNode : Node
         prettyName = std::move(name);
     }
 
-    void dump(int /*indent*/) override
+    void dump(int /*indent*/) const override
     {
         printf("Command: %s", prettyName.c_str());
     }
 
-    std::string toString() override
+    std::string toString() const override
     {
         return prettyName;
     }
-    int toInteger() override
+    int toInteger() const override
     {
         return 0;
     }
-    double toDouble() override
+    double toDouble() const override
     {
         return 0.0;
     }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) override;
 
-    virtual NodeType getType()
+    NodeType getType() const override
     {
         return NodeType::Command;
     };
@@ -272,24 +272,24 @@ struct StringNode : Node
     }
 
     /// @return The stored value.
-    std::string toString() override
+    std::string toString() const override
     {
         return value;
     }
 
     /// @return the value converted to integer using strtol.
-    int toInteger() override
+    int toInteger() const override
     {
         return stringToInteger(value);
     }
 
     /// @return The value converted to double using strtod.
-    double toDouble() override
+    double toDouble() const override
     {
         return stringToDouble(value);
     }
 
-    void dump(int /*indent*/) override
+    void dump(int /*indent*/) const override
     {
         printf("Quoted string: %s", value.c_str());
     }
@@ -301,7 +301,7 @@ struct StringNode : Node
     }
 
     /// @return NodeType::String
-    virtual NodeType getType()
+    virtual NodeType getType() const
     {
         return NodeType::String;
     };
@@ -319,12 +319,12 @@ struct GroupNode : Node
      *
      * @return The concatenated result.
      */
-    std::string toString() override;
+    std::string toString() const override;
 
     /**
      * @return 0
      */
-    int toInteger() override
+    int toInteger() const override
     {
         return 0;
     }
@@ -332,12 +332,12 @@ struct GroupNode : Node
     /**
      * @return 0.0
      */
-    double toDouble() override
+    double toDouble() const override
     {
         return 0.0;
     }
 
-    void dump(int indent) override;
+    void dump(int indent) const override;
 
     /**
      * Evaluates each node.
@@ -366,7 +366,7 @@ struct GroupNode : Node
     /**
      * @return NodeType::Group;
      */
-    virtual NodeType getType()
+    virtual NodeType getType() const
     {
         return NodeType::Group;
     };
@@ -378,19 +378,19 @@ struct NullNode : Node
     using Node::evaluate;
 
     /// @return the string "null".
-    std::string toString() override
+    std::string toString() const override
     {
         return "null";
     }
 
     /// @return 0
-    int toInteger() override
+    int toInteger() const override
     {
         return 0;
     }
 
     /// @return 0.0
-    double toDouble() override
+    double toDouble() const override
     {
         return 0;
     }
@@ -398,7 +398,7 @@ struct NullNode : Node
     /// Singleton instance so you don't need to create these.
     static std::shared_ptr<Node> instance;
 
-    void dump(int /*indent*/) override
+    void dump(int /*indent*/) const override
     {
         printf("Null");
     }
@@ -410,7 +410,7 @@ struct NullNode : Node
     }
 
     /// @return NodeType::Null
-    virtual NodeType getType()
+    virtual NodeType getType() const
     {
         return NodeType::Null;
     };
