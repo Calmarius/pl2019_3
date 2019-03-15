@@ -37,7 +37,8 @@ public:
     }
 
     /**
-     * @return The position of the current node.
+     * @return The position of the current node. If the iterator is finished, it
+     * returns a default Position() object.
      */
     Position getPosition();
 

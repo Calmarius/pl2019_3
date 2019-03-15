@@ -20,6 +20,10 @@ ArgIterator::IteratorType ArgIterator::dummy;
 
 Position ArgIterator::getPosition()
 {
+    if (current == end)
+    {
+        return Position();
+    }
     return current->start;
 }
 
