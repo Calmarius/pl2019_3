@@ -96,7 +96,7 @@ public:
 };
 
 /// This node represents an immutable integer value.
-struct IntegerNode : Node, std::enable_shared_from_this<IntegerNode>
+struct IntegerNode : Node, private std::enable_shared_from_this<IntegerNode>
 {
     using Node::evaluate;
 
@@ -159,7 +159,7 @@ struct IntegerNode : Node, std::enable_shared_from_this<IntegerNode>
 };
 
 /// This node represents an immutable floating point value
-struct FloatNode : Node, std::enable_shared_from_this<FloatNode>
+struct FloatNode : Node, private std::enable_shared_from_this<FloatNode>
 {
     using Node::evaluate;
 
@@ -288,7 +288,7 @@ struct CommandNode : Node
 };
 
 /// Represents a string value.
-struct StringNode : Node, std::enable_shared_from_this<StringNode>
+struct StringNode : Node, private std::enable_shared_from_this<StringNode>
 {
     using Node::evaluate;
 
@@ -406,7 +406,7 @@ struct GroupNode : Node
 };
 
 /// Represent the null node. Used when no meaningful result available.
-struct NullNode : Node, std::enable_shared_from_this<NullNode>
+struct NullNode : Node, private std::enable_shared_from_this<NullNode>
 {
     using Node::evaluate;
 
