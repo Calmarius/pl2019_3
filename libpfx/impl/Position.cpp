@@ -9,7 +9,7 @@ std::string Position::toString()
 
 void Position::raiseErrorHere(std::string errorMsg)
 {
-    throw error::RuntimeError(*this, errorMsg);
+    throw error::RuntimeError(*this, std::move(errorMsg));
 }
 
 

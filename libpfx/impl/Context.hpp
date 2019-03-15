@@ -1,3 +1,5 @@
+/// @file Context.hpp Defines the Context class.
+
 #pragma once
 
 namespace pfx
@@ -31,6 +33,18 @@ public:
      */
     std::shared_ptr<Command> getCommand(const std::string &name);
 
+    /**
+     * Compiles source from the given input source.
+     *
+     * @param[in,out] input The input the code is read from.
+     *
+     * @return The group node
+     *
+     * @throw error::ClosingBraceWithoutOpeningOne On finding a closing brace
+     * without the corresponding opening one.
+     * @throw error::ClosingBraceExpected When there are unclosed braces at the
+     * end of the parsing.
+     */
     std::shared_ptr<GroupNode> compileCode(Input &input);
 };
 } // namespace pfx

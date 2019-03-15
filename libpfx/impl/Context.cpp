@@ -103,10 +103,6 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
                         token.word);
                 commands[token.word] = tmp;
                 newNode = tmp;
-
-                /*printf("%s: %s is a string node.\n",
-                token.start.toString().c_str(), token.word.c_str()); newNode =
-                std::make_shared<StringNode>(token.word);*/
             }
             else
             {
@@ -120,8 +116,6 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
     {
         throw error::ClosingBraceExpected(token.start);
     }
-
-    // groupStack.top()->dump();
 
     return std::shared_ptr<GroupNode>(groupStack.top());
 }
