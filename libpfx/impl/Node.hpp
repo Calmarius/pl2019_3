@@ -19,15 +19,15 @@ protected:
         printf("%*s", indent * 4, "");
     }
 
+    // Owned via references, do not copy.
+    Node(const Node &) = delete;
+    Node &operator=(const Node &) = delete;
+
 public:
     /// Default constructor does nothing.
     Node()
     {
     }
-
-    // Owned via references, do not copy.
-    Node(const Node &) = delete;
-    Node &operator=(const Node &) = delete;
 
     /// Default destructor does nothing.
     virtual ~Node()

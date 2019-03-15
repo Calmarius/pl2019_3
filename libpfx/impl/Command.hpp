@@ -26,6 +26,7 @@ struct Command
     {
     }
 
+private:
     // Owned via references, do not copy.
     Command(const Command &) = delete;
     Command &operator=(const Command &) = delete;

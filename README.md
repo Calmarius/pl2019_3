@@ -27,7 +27,7 @@ The description of the language and short tutorial follows.
 ## Input character set
 
 The input files are treated as binary, that is a sequence of bytes, so the implementer don't need to care about the encoding stuff and things like that.
-The main character class is whitespace: the space character itself (ASCII 32), and characters between ASCII 9 and 13. That is the \t, \n, \v, \f, \r characters.
+The main character class is whitespace: the space character itself (ASCII 32), and characters between ASCII 9 and 13. That is the \\t, \\n, \\v, \\f, \\r characters.
 The rest of the characters are part of the language without exception.
 
 ## The tokens
