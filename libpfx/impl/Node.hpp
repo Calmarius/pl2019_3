@@ -25,6 +25,10 @@ public:
     {
     }
 
+    // Owned via references, do not copy.
+    Node(const Node &) = delete;
+    Node &operator=(const Node &) = delete;
+
     /// Default destructor does nothing.
     virtual ~Node()
     {

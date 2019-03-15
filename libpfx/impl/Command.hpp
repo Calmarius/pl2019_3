@@ -21,5 +21,13 @@ struct Command
     virtual ~Command()
     {
     }
+
+    Command()
+    {
+    }
+
+    // Owned via references, do not copy.
+    Command(const Command &) = delete;
+    Command &operator=(const Command &) = delete;
 };
 } // namespace pfx
