@@ -220,16 +220,32 @@ struct FloatNode : Node, std::enable_shared_from_this<FloatNode>
     };
 };
 
+/// Represents an user defined command.
 struct CommandNode : Node
 {
     using Node::evaluate;
+
+    /// Reference to the command.
     std::shared_ptr<Command> command;
+
+    /// The name of the command. This is stored during the parsing.
     std::string prettyName;
 
-    CommandNode(std::shared_ptr<Command> cmd) : command(std::move(cmd))
+    /**
+     * Constructs a command node for the given command.
+     *
+     * @param [in] command The command this node represents.
+     */
+    CommandNode(std::shared_ptr<Command> command) : command(std::move(command))
     {
     }
 
+    /**
+     * Constructs a command node for the given command.
+     *
+     * @param [in] command The command this node represents.
+     * @param [in] name The name of the command refer to.
+     */
     CommandNode(std::shared_ptr<Command> cmd, std::string name)
         : CommandNode(std::move(cmd))
     {
@@ -254,8 +270,17 @@ struct CommandNode : Node
         return 0.0;
     }
 
-    std::shared_ptr<Node> evaluate(ArgIterator &) const override;
+    /**
+     * Evaluates the node by running the passed in command.
+     *
+     * @param [in,out] The argument iterator the command use the fetch more
+     * arguments.
+     *
+     * @return The result of the command.
+     */
+    std::shared_ptr<Node> evaluate(ArgIterator &iterator) const override;
 
+    /// @return NodeType::Command
     NodeType getType() const override
     {
         return NodeType::Command;

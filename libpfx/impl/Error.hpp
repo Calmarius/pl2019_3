@@ -2,12 +2,14 @@
 
 namespace pfx
 {
+/// Represent an exception type used within this lib.
 struct Error
 {
-    Position position;
-    std::string reason;
+    Position position;  ///< Where the exception occurred.
+    std::string reason; ///< Why it occurred.
 
-    Error(Position pos, std::string reason) : position(pos), reason(reason)
+    Error(Position pos, std::string reason)
+        : position(std::move(pos)), reason(std::move(reason))
     {
     }
     std::string toString();
