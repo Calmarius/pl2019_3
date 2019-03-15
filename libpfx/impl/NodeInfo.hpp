@@ -1,3 +1,5 @@
+/// @file NodeInfo.hpp Contains the NodeInfo class.
+
 namespace pfx
 {
 /** Contains a reference to a node and some metadata

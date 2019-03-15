@@ -1,8 +1,11 @@
+/// @file Command.hpp Contains the Command class.
+
 namespace pfx
 {
 class Node;
 class ArgIterator;
 class Command;
+/// Shorthand for the Command reference.
 using CommandRef = std::shared_ptr<Command>;
 
 /// Represents a command to be evaluated in a command node.

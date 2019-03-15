@@ -1,7 +1,10 @@
+/// @file NodeType.hpp Contains the NodeType class.
+
 #pragma once
 
 namespace pfx
 {
+/// Represents the types of the possible nodes.
 enum class NodeType
 {
     Integer,       ///< Integer literal

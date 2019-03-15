@@ -51,11 +51,6 @@ bool isWhitespace(char c)
     return ((9 <= c) && (c <= 13)) || (c == ' ');
 }
 
-bool isNumeric(char c)
-{
-    return ('0' <= c) && (c <= '9');
-}
-
 bool readWord(Input &input, Token &token)
 {
     token = Token();

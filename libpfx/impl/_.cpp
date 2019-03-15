@@ -10,7 +10,7 @@
 #include <map>
 #include <stdexcept>
 
-#include "util.hpp"
+#include "utility.hpp"
 
 #include "Command.hpp"
 #include "NodeType.hpp"
@@ -23,7 +23,7 @@
 #include "Context.hpp"
 #include "Node.hpp"
 
-#include "util.cpp"
+#include "utility.cpp"
 
 #include "Input.cpp"
 #include "ArgIterator.cpp"

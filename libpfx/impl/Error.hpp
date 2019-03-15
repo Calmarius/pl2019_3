@@ -1,4 +1,4 @@
-#pragma once
+/// @file Error.hpp contains the Error class.
 
 namespace pfx
 {
@@ -26,6 +26,7 @@ struct Error
     std::string toString();
 };
 
+/// @cond FALSE
 namespace error
 {
 #define DECLARE_ERROR(Typename, message)                                       \
@@ -60,5 +61,6 @@ DECLARE_REASON_ERROR(FailedToOpenFile);
 #undef DECLARE_REASON_ERROR
 
 } // namespace error
+/// @endcond
 
 } // namespace pfx

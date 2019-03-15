@@ -1,4 +1,4 @@
-// @file Input.hpp Interface for the Input class.
+/// @file Input.hpp Contains the Input class.
 
 namespace pfx
 {

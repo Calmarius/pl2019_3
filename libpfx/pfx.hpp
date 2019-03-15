@@ -1,3 +1,5 @@
+/// @file pfx.hpp The main header to use in client applications.
+
 #pragma once
 
 #include <vector>
@@ -6,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "impl/util.hpp"
+#include "impl/utility.hpp"
 
 #include "impl/Command.hpp"
 #include "impl/NodeType.hpp"
