@@ -258,25 +258,35 @@ struct CommandNode : Node
     };
 };
 
+/// Represents a string value.
 struct StringNode : Node
 {
     using Node::evaluate;
+
+    /// The stored value.
     const std::string value;
-    StringNode(const std::string &value) : value(value)
+
+    /// Creates string node.
+    StringNode(std::string value) : value(std::move(value))
     {
     }
 
+    /// @return The stored value.
     std::string toString() override
     {
         return value;
     }
+
+    /// @return the value converted to integer using strtol.
     int toInteger() override
     {
-        return 0;
+        return stringToInteger(value);
     }
+
+    /// @return The value converted to double using strtod.
     double toDouble() override
     {
-        return 0.0;
+        return stringToDouble(value);
     }
 
     void dump(int /*indent*/) override
@@ -284,11 +294,13 @@ struct StringNode : Node
         printf("Quoted string: %s", value.c_str());
     }
 
+    /// @return itself.
     std::shared_ptr<Node> evaluate(ArgIterator &) const
     {
         return std::make_shared<StringNode>(*this);
     }
 
+    /// @return NodeType::String
     virtual NodeType getType()
     {
         return NodeType::String;

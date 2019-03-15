@@ -1,4 +1,4 @@
-- The empty throws are now useless.
+Using shared_ptr with this.
 
 
 
