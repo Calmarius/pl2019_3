@@ -92,7 +92,7 @@ public:
 };
 
 /// This node represents an immutable integer value.
-struct IntegerNode : Node
+struct IntegerNode : Node, std::enable_shared_from_this<IntegerNode>
 {
     using Node::evaluate;
 
@@ -142,7 +142,7 @@ struct IntegerNode : Node
      */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
-        return std::make_shared<IntegerNode>(*this);
+        return std::const_pointer_cast<IntegerNode>(shared_from_this());
     }
 
     /**
@@ -155,7 +155,7 @@ struct IntegerNode : Node
 };
 
 /// This node represents an immutable floating point value
-struct FloatNode : Node
+struct FloatNode : Node, std::enable_shared_from_this<FloatNode>
 {
     using Node::evaluate;
 
@@ -204,7 +204,7 @@ struct FloatNode : Node
      */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
-        return std::make_shared<FloatNode>(*this);
+        return std::const_pointer_cast<FloatNode>(shared_from_this());
     }
 
     /**
@@ -259,7 +259,7 @@ struct CommandNode : Node
 };
 
 /// Represents a string value.
-struct StringNode : Node
+struct StringNode : Node, std::enable_shared_from_this<StringNode>
 {
     using Node::evaluate;
 
@@ -297,7 +297,7 @@ struct StringNode : Node
     /// @return itself.
     std::shared_ptr<Node> evaluate(ArgIterator &) const
     {
-        return std::make_shared<StringNode>(*this);
+        return std::const_pointer_cast<StringNode>(shared_from_this());
     }
 
     /// @return NodeType::String
@@ -373,7 +373,7 @@ struct GroupNode : Node
 };
 
 /// Represent the null node. Used when no meaningful result available.
-struct NullNode : Node
+struct NullNode : Node, std::enable_shared_from_this<NullNode>
 {
     using Node::evaluate;
 
@@ -406,7 +406,7 @@ struct NullNode : Node
     /// @return itself.
     std::shared_ptr<Node> evaluate(ArgIterator &) const
     {
-        return std::make_shared<NullNode>(*this);
+        return std::const_pointer_cast<NullNode>(shared_from_this());
     }
 
     /// @return NodeType::Null
