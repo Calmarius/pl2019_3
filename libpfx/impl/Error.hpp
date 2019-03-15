@@ -8,10 +8,21 @@ struct Error
     Position position;  ///< Where the exception occurred.
     std::string reason; ///< Why it occurred.
 
-    Error(Position pos, std::string reason)
-        : position(std::move(pos)), reason(std::move(reason))
+    /**
+     * Constructs an error instance.
+     *
+     * @param [in] position The position the error happened.
+     * @param [in] reason The reason of the error.
+     */
+    Error(Position position, std::string reason)
+        : position(std::move(position)), reason(std::move(reason))
     {
     }
+
+    /**
+     * @return The string representation of the error. In a "Position: message"
+     * format.
+     */
     std::string toString();
 };
 

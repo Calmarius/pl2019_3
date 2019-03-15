@@ -21,8 +21,12 @@ struct Token
     {
     }
 
-    /// Initializes it with a word.
-    Token(std::string str) : word(std::move(str)), quoted(true)
+    /**
+     *  Initializes it with a word.
+     *
+     * @param [in] tokenString The string of the token.
+     */
+    Token(std::string tokenString) : word(std::move(tokenString)), quoted(true)
     {
     }
 };

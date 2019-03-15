@@ -9,6 +9,10 @@ using NodeRef = std::shared_ptr<Node>;
 /// Defines a node, the basic building block of the language.
 class Node
 {
+    // Owned via references, do not copy.
+    Node(const Node &) = delete;
+    Node &operator=(const Node &) = delete;
+
 protected:
     /** Used internally to dump indents.
      *
@@ -18,10 +22,6 @@ protected:
     {
         printf("%*s", indent * 4, "");
     }
-
-    // Owned via references, do not copy.
-    Node(const Node &) = delete;
-    Node &operator=(const Node &) = delete;
 
 public:
     /// Default constructor does nothing.
@@ -142,7 +142,7 @@ struct IntegerNode : Node, std::enable_shared_from_this<IntegerNode>
     }
 
     /**
-     * Returns a copy of itself.
+     * @return Itself.
      */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
@@ -246,8 +246,8 @@ struct CommandNode : Node
      * @param [in] command The command this node represents.
      * @param [in] name The name of the command refer to.
      */
-    CommandNode(std::shared_ptr<Command> cmd, std::string name)
-        : CommandNode(std::move(cmd))
+    CommandNode(std::shared_ptr<Command> command, std::string name)
+        : CommandNode(std::move(command))
     {
         prettyName = std::move(name);
     }
@@ -273,8 +273,8 @@ struct CommandNode : Node
     /**
      * Evaluates the node by running the passed in command.
      *
-     * @param [in,out] The argument iterator the command use the fetch more
-     * arguments.
+     * @param [in,out] iterator The argument iterator the command use the fetch
+     * more arguments.
      *
      * @return The result of the command.
      */
@@ -295,7 +295,11 @@ struct StringNode : Node, std::enable_shared_from_this<StringNode>
     /// The stored value.
     const std::string value;
 
-    /// Creates string node.
+    /**
+     * Creates string node.
+     *
+     * @param [in] value The string value to store.
+     */
     StringNode(std::string value) : value(std::move(value))
     {
     }

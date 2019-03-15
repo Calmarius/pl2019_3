@@ -28,6 +28,8 @@ public:
                     const std::shared_ptr<Command> &command);
 
     /**
+     * @param [in] name The command name to look for.
+     *
      * @return The command for the name. If the command not found, nullptr is
      * returned.
      */
