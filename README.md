@@ -7,6 +7,8 @@ easy to implement and integrate.
 
 The name comes from the year and the fact that this is the 3rd programming language I try to make this year.
 
+Internally it uses the pfx name, which is named this way because the language uses the prefix notation.
+
 ## Quick build guide
 
 Only Linux builds available.
