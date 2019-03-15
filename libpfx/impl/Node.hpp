@@ -310,12 +310,16 @@ struct GroupNode : Node
     std::string toString() override;
 
     /**
-     *
+     * @return 0
      */
     int toInteger() override
     {
         return 0;
     }
+
+    /**
+     * @return 0.0
+     */
     double toDouble() override
     {
         return 0.0;
@@ -323,10 +327,33 @@ struct GroupNode : Node
 
     void dump(int indent) override;
 
+    /**
+     * Evaluates each node.
+     *
+     * @return the evalutation result of the last evaluation.
+     *
+     * @remarks
+     *  The iterators during the evaluation is passed to the nodes being
+     * evaluated. So they can recursively fetch or evaluate their other
+     * arguments.
+     */
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
 
+    /**
+     * Evaluate all nodes in the group.
+     *
+     * @return A new group node containing the evaluation result of each
+     * evaluation.
+     *
+     * @remarks
+     * This works similarly to the evaluate, except that all evaluation results
+     * are kept.
+     */
     std::shared_ptr<GroupNode> evaluateAll() const;
 
+    /**
+     * @return NodeType::Group;
+     */
     virtual NodeType getType()
     {
         return NodeType::Group;

@@ -33,9 +33,9 @@ The rest of the characters are part of the language without exception.
 ## The tokens
 
 One higher level the language is comprised of tokens.
-A token is a sequence on non-whitespace characters like `foo`, or a sequence of non-quote characters between quotes, eg. `"foo bar"`.
-In this quoted form the quotes themshelves are escaped as doubling the quotes, eg. `"Quote in string ""like this"". "`
-And this is the only escape sequence in the langauge.
+A token is a sequence on non-whitespace characters like `foo`, or a sequence of non-quote characters between quotes, e.g.. `"foo bar"`.
+In this quoted form the quotes themselves are escaped as doubling the quotes, e.g. `"Quote in string ""like this"". "`
+And this is the only escape sequence in the language.
 
 ## The nodes
 
@@ -67,28 +67,28 @@ These operations behave separately for each node type.
 
 ### Integer node
 
-This node is immuatable.
+This node is immutable.
 
 - ToInteger: just returns the stored value.
-- ToFloat: just retuns the stored value converted to float.
+- ToFloat: just returns the stored value converted to float.
 - ToString: turns the stored value into string. (In the C++ code I used the %d printf format).
 - Evaluate: Returns a reference itself.
 
 ### Float node
 
-This node is immuatable.
+This node is immutable.
 
 - ToInteger: just returns the stored value converted to integer.
-- ToFloat: just retuns the stored value.
+- ToFloat: just returns the stored value.
 - ToString: turns the stored value into string. (In the C++ code I used the %g printf format).
 - Evaluate: Returns a reference itself.
 
 ### String node
 
-This node is immuatable.
+This node is immutable.
 
 - ToInteger: just returns the stored value converted to integer. (In the C++ code I used strtol)
-- ToFloat: just retuns the stored value converted to float. ((In the C++ code I used strtod))
+- ToFloat: just returns the stored value converted to float. ((In the C++ code I used strtod))
 - ToString: returns the stored value.
 - Evaluate: Returns a reference itself.
 
@@ -100,14 +100,14 @@ Before the parsing the user must register these callbacks for each command word 
 - ToInteger: returns 0.
 - ToFloat: returns 0.
 - ToString: returns the token text.
-- Evaluate: Executes the user provided calback an returns the new node it creates.
+- Evaluate: Executes the user provided callback an returns the new node it creates.
 
 During parsing each identical command word will be made to refer to the same command callback.
 The command callback can be stateful, and this fact can be abused to introduce variables to the language.
 
 ### Null node
 
-This kind of node arises only during the executiong typically indicating the case when no meaningful result can be provided.
+This kind of node arises only during the executing typically indicating the case when no meaningful result can be provided.
 
 - ToInteger: returns 0.
 - ToFloat: returns 0-0.
@@ -119,7 +119,7 @@ This kind of node arises only during the executiong typically indicating the cas
 - ToInteger: returns 0.
 - ToFloat: returns 0.0.
 - ToString: converts each child node to string and the concatenates these strings.
-- Evaluate: iterates over child nodes and evaluate each of them. The evaluation of the last node will be the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evalute more nodes (their arguments basically).
+- Evaluate: iterates over child nodes and evaluate each of them. The evaluation of the last node will be the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evaluate more nodes (their arguments basically).
 - Evaluate all: this is an operation specific to the group nodes. It does something similar that the Evaluate method does, but instead of just returning the result of the last evaluation it returns an new group node that contains the results of all evaluations that took place during the iteration.
 
 ## Argument iterators
@@ -137,7 +137,7 @@ The evaluateNext should be used when you expect to read simple values like numbe
 After parsing we get the root group node. And the execution of the program is done by calling the Evaluate method of this root group node.
 
 As we have written previously the executing starts by creating an iterator that traverses the group node's child nodes.
-Then recursively evaluate them to, passing them a reference of the argument iterator to fetch or evaluate furhet nodes in the group.
+Then recursively evaluate them to, passing them a reference of the argument iterator to fetch or evaluate further nodes in the group.
 Then it returns with a result and the next child node the iterator points to is evaluated and so on, until we reach the end.
 
 ## Implementing the features
@@ -183,7 +183,7 @@ Now we can write our first program like this:
 
 And if compile the C++ program and run it, it should print these two lines by executing the two println commands.
 
-### Aritmetic
+### Arithmetic
 
 Arithmetic can be realized using the Polish notation.
 Just like the reverse polish one, it doesn't need parenthesis and precedence as it's encoded in the notation.
@@ -342,7 +342,7 @@ But they can be added as a command like this:
     };
 
 As it can be seen, it fetches the next node and just ignores it.
-Assing this to the `//` command word, then you can comment stuff like this:
+Adding this to the `//` command word, then you can comment stuff like this:
 
     // ( Stuff to
      comment out )
