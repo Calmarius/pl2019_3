@@ -1,6 +1,7 @@
 namespace pfx
 {
-void Context::setCommand(std::string name, std::shared_ptr<Command> command)
+void Context::setCommand(const std::string &name,
+                         const std::shared_ptr<Command> &command)
 {
     auto iter = commands.find(name);
 
@@ -126,7 +127,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
 }
 
 
-std::shared_ptr<Command> Context::getCommand(std::string name)
+std::shared_ptr<Command> Context::getCommand(const std::string &name)
 {
     auto iter = commands.find(name);
 
