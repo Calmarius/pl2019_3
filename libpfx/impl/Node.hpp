@@ -222,14 +222,14 @@ struct CommandNode : Node
     std::shared_ptr<Command> command;
     std::string prettyName;
 
-    CommandNode(std::shared_ptr<Command> cmd) : command(cmd)
+    CommandNode(std::shared_ptr<Command> cmd) : command(std::move(cmd))
     {
     }
 
     CommandNode(std::shared_ptr<Command> cmd, std::string name)
-        : CommandNode(cmd)
+        : CommandNode(std::move(cmd))
     {
-        prettyName = name;
+        prettyName = std::move(name);
     }
 
     void dump(int /*indent*/) override
@@ -262,7 +262,7 @@ struct StringNode : Node
 {
     using Node::evaluate;
     const std::string value;
-    StringNode(std::string value) : value(value)
+    StringNode(const std::string &value) : value(value)
     {
     }
 
