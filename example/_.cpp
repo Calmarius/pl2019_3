@@ -522,8 +522,7 @@ struct MapCommand : pfx::Command
         {
             mapPos.raiseErrorHere("Command node expected.");
         }
-        const pfx::GroupNode *group =
-            dynamic_cast<pfx::GroupNode *>(groupNode.get());
+        pfx::GroupNode *group = dynamic_cast<pfx::GroupNode *>(groupNode.get());
         if (!group)
         {
             groupPos.raiseErrorHere("Group node expected");

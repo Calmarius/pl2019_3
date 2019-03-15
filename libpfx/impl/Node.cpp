@@ -45,13 +45,13 @@ std::string GroupNode::toString()
 std::shared_ptr<Node> NullNode::instance = std::make_shared<NullNode>();
 
 
-std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter) const
+std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter)
 {
     return command->execute(hIter);
 }
 
 
-std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
+std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &)
 {
     const auto end = nodes.end();
     std::shared_ptr<Node> resultNode = NullNode::instance;
@@ -65,7 +65,7 @@ std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
 }
 
 
-std::shared_ptr<GroupNode> GroupNode::evaluateAll() const
+std::shared_ptr<GroupNode> GroupNode::evaluateAll()
 {
     auto newGroupNode = std::make_shared<GroupNode>();
 

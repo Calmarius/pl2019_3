@@ -10,7 +10,7 @@ struct NodeInfo;
 class ArgIterator
 {
 private:
-    typedef std::vector<NodeInfo>::const_iterator IteratorType;
+    typedef std::vector<NodeInfo>::iterator IteratorType;
     IteratorType &current;
     IteratorType end;
 

@@ -65,7 +65,7 @@ public:
      *
      * @return The node representing the result.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &iterator) const = 0;
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &iterator) = 0;
 
     /**
      * @return string value from the node. The behavior is implementation
@@ -140,7 +140,7 @@ struct IntegerNode : Node
     /**
      * Returns a copy of itself.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &) override
     {
         return std::make_shared<IntegerNode>(*this);
     }
@@ -202,7 +202,7 @@ struct FloatNode : Node
     /**
      * @return a copy of this node.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &) override
     {
         return std::make_shared<FloatNode>(*this);
     }
@@ -250,7 +250,7 @@ struct CommandNode : Node
         return 0.0;
     }
 
-    std::shared_ptr<Node> evaluate(ArgIterator &) const override;
+    std::shared_ptr<Node> evaluate(ArgIterator &) override;
 
     virtual NodeType getType()
     {
@@ -295,7 +295,7 @@ struct StringNode : Node
     }
 
     /// @return itself.
-    std::shared_ptr<Node> evaluate(ArgIterator &) const
+    std::shared_ptr<Node> evaluate(ArgIterator &)
     {
         return std::make_shared<StringNode>(*this);
     }
@@ -349,7 +349,7 @@ struct GroupNode : Node
      * evaluated. So they can recursively fetch or evaluate their other
      * arguments.
      */
-    std::shared_ptr<Node> evaluate(ArgIterator &) const override;
+    std::shared_ptr<Node> evaluate(ArgIterator &) override;
 
     /**
      * Evaluate all nodes in the group.
@@ -361,7 +361,7 @@ struct GroupNode : Node
      * This works similarly to the evaluate, except that all evaluation results
      * are kept.
      */
-    std::shared_ptr<GroupNode> evaluateAll() const;
+    std::shared_ptr<GroupNode> evaluateAll();
 
     /**
      * @return NodeType::Group;
@@ -404,7 +404,7 @@ struct NullNode : Node
     }
 
     /// @return itself.
-    std::shared_ptr<Node> evaluate(ArgIterator &) const
+    std::shared_ptr<Node> evaluate(ArgIterator &)
     {
         return std::make_shared<NullNode>(*this);
     }
