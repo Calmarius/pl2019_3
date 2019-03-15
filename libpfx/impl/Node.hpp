@@ -6,13 +6,13 @@ struct Node;
 /// Shorthand for the node references.
 using NodeRef = std::shared_ptr<Node>;
 
-/// Defines a node, the basic building block of the langage.
+/// Defines a node, the basic building block of the language.
 class Node
 {
 protected:
     /** Used internally to dump indents.
      *
-     * @param [in] indent Prints 4×indent spaces.
+     * @param [in] indent Prints 4 × indent spaces.
      */
     void dumpIndent(int indent)
     {
@@ -43,7 +43,7 @@ public:
     };
 
     /**
-     * Iteratorless node evaluation.
+     * Node evaluation without iterators.
      *
      * @return Reference to the result node.
      *
@@ -60,27 +60,27 @@ public:
     /**
      * Evaluates a node.
      *
-     * @param [in] iter An iterator the implemenation may use to read further
-     * arguments.
+     * @param [in] iterator An iterator the implementation may use to read
+     * further arguments.
      *
      * @return The node representing the result.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &iter) const = 0;
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &iterator) const = 0;
 
     /**
-     * @return string value from the node. The behavior is imlementation
+     * @return string value from the node. The behavior is implementation
      * defined.
      */
     virtual std::string toString() = 0;
 
     /**
-     * @return string value from the node. The behavior is imlementation
+     * @return string value from the node. The behavior is implementation
      * defined.
      */
     virtual int toInteger() = 0;
 
     /**
-     * @return string value from the node. The behavior is imlementation
+     * @return string value from the node. The behavior is implementation
      * defined.
      */
     virtual double toDouble() = 0;
@@ -330,7 +330,7 @@ struct GroupNode : Node
     /**
      * Evaluates each node.
      *
-     * @return the evalutation result of the last evaluation.
+     * @return the evaluation result of the last evaluation.
      *
      * @remarks
      *  The iterators during the evaluation is passed to the nodes being
@@ -360,22 +360,30 @@ struct GroupNode : Node
     };
 };
 
+/// Represent the null node. Used when no meaningful result available.
 struct NullNode : Node
 {
     using Node::evaluate;
+
+    /// @return the string "null".
     std::string toString() override
     {
         return "null";
     }
+
+    /// @return 0
     int toInteger() override
     {
         return 0;
     }
+
+    /// @return 0.0
     double toDouble() override
     {
         return 0;
     }
 
+    /// Singleton instance so you don't need to create these.
     static std::shared_ptr<Node> instance;
 
     void dump(int /*indent*/) override
@@ -383,11 +391,13 @@ struct NullNode : Node
         printf("Null");
     }
 
+    /// @return itself.
     std::shared_ptr<Node> evaluate(ArgIterator &) const
     {
         return std::make_shared<NullNode>(*this);
     }
 
+    /// @return NodeType::Null
     virtual NodeType getType()
     {
         return NodeType::Null;
