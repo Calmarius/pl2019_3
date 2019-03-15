@@ -243,11 +243,11 @@ struct CommandNode : Node
     }
     int toInteger() override
     {
-        return stringToInteger(prettyName);
+        return 0;
     }
     double toDouble() override
     {
-        return stringToDouble(prettyName);
+        return 0.0;
     }
 
     std::shared_ptr<Node> evaluate(ArgIterator &) const override;
@@ -272,11 +272,11 @@ struct StringNode : Node
     }
     int toInteger() override
     {
-        return stringToInteger(value);
+        return 0;
     }
     double toDouble() override
     {
-        return stringToDouble(value);
+        return 0.0;
     }
 
     void dump(int /*indent*/) override
@@ -308,13 +308,17 @@ struct GroupNode : Node
      * @return The concatenated result.
      */
     std::string toString() override;
+
+    /**
+     *
+     */
     int toInteger() override
     {
-        return stringToInteger(toString());
+        return 0;
     }
     double toDouble() override
     {
-        return stringToDouble(toString());
+        return 0.0;
     }
 
     void dump(int indent) override;

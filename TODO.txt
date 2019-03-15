@@ -1,5 +1,3 @@
-- There is no point in converting command and group nodes to numbers. They should return 0.
-
 - The empty throws are now useless.
 
 
