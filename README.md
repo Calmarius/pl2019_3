@@ -55,7 +55,7 @@ Non-quoted tokens are interpreted as follows:
 
 I deliberately not defined how integers and floats are parsed, as you can use your favorite language's integer and floating point parsing functions.
 For the C++ code in this repo I used strtol for the integers strtod for the floats.
-Also I didn't define the ranges of the integer and float to allow the implementers use their own
+Also I didn't define the ranges of the integer and float to allow the implementers use their own.
 
 ## Types of nodes and their operations.
 
@@ -66,7 +66,7 @@ There are 4 basic operations on the nodes:
 - ToString: gets the string value of the node.
 - Evaluate(argumentIterator): evaluates the node, creates a new node in the process. This operation also has access to an iterator the allows the node to gets its arguments.
 
-These operations behave separately for each node type.
+These operations behave differently for each node type.
 
 ### Integer node
 
@@ -75,7 +75,7 @@ This node is immutable.
 - ToInteger: just returns the stored value.
 - ToFloat: just returns the stored value converted to float.
 - ToString: turns the stored value into string. (In the C++ code I used the %d printf format).
-- Evaluate: Returns a reference itself.
+- Evaluate: Returns a reference to itself.
 
 ### Float node
 
@@ -84,16 +84,16 @@ This node is immutable.
 - ToInteger: just returns the stored value converted to integer.
 - ToFloat: just returns the stored value.
 - ToString: turns the stored value into string. (In the C++ code I used the %g printf format).
-- Evaluate: Returns a reference itself.
+- Evaluate: Returns a reference to itself.
 
 ### String node
 
 This node is immutable.
 
 - ToInteger: just returns the stored value converted to integer. (In the C++ code I used strtol)
-- ToFloat: just returns the stored value converted to float. ((In the C++ code I used strtod))
+- ToFloat: just returns the stored value converted to float. (In the C++ code I used strtod)
 - ToString: returns the stored value.
-- Evaluate: Returns a reference itself.
+- Evaluate: Returns a reference to itself.
 
 ### Command node
 
@@ -101,7 +101,7 @@ This node contains an user defined callback object that manages the execution of
 Before the parsing the user must register these callbacks for each command word so during parsing the parser can bind them to the actual command nodes.
 
 - ToInteger: returns 0.
-- ToFloat: returns 0.
+- ToFloat: returns 0.0.
 - ToString: returns the token text.
 - Evaluate: Executes the user provided callback an returns the new node it creates.
 
@@ -113,7 +113,7 @@ The command callback can be stateful, and this fact can be abused to introduce v
 This kind of node arises only during the executing typically indicating the case when no meaningful result can be provided.
 
 - ToInteger: returns 0.
-- ToFloat: returns 0-0.
+- ToFloat: returns 0.0.
 - ToString: returns empty string.
 - Evaluate: Returns itself.
 
@@ -121,7 +121,7 @@ This kind of node arises only during the executing typically indicating the case
 
 - ToInteger: returns 0.
 - ToFloat: returns 0.0.
-- ToString: converts each child node to string and the concatenates these strings.
+- ToString: converts each child node to string and then concatenates these strings as a result.
 - Evaluate: iterates over child nodes and evaluate each of them. The evaluation of the last node will be the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evaluate more nodes (their arguments basically).
 - Evaluate all: this is an operation specific to the group nodes. It does something similar that the Evaluate method does, but instead of just returning the result of the last evaluation it returns an new group node that contains the results of all evaluations that took place during the iteration.
 
@@ -146,13 +146,13 @@ Then it returns with a result and the next child node the iterator points to is 
 ## Implementing the features
 
 We must point out that the language itself is empty. It doesn't come with features. it's the developer's task to add these to the language in a form of command node callbacks.
-Most thing can be implemented quite simply.
+Most things can be implemented quite simply.
 
-The full documentation is available
+The full documentation is available as Doxygen document if you make it, or you can read the comments in headers.
 
 ### Hello world
 
-As usual in programming language we would like to print stuff first. So we can implement it as follows:
+As usual in programming languages, we would like to print stuff first. So we can implement it as follows:
 
     struct PrintLnCommand : pfx::Command
     {
@@ -166,7 +166,7 @@ As usual in programming language we would like to print stuff first. So we can i
         }
     };
 
-As we can see, it evaluates the next node, and just print it when we convert it to string. It returns the null node, because it has nothing meaningful to return.
+As we can see, it evaluates the next node, and just print it string representation of it. It returns the null node, because it has nothing meaningful to return.
 
 Then in the main program we write:
 
@@ -189,8 +189,8 @@ And if compile the C++ program and run it, it should print these two lines by ex
 ### Arithmetic
 
 Arithmetic can be realized using the Polish notation.
-Just like the reverse polish one, it doesn't need parenthesis and precedence as it's encoded in the notation.
-And we can implement commands for the operations.
+Just like the reverse Polish one, it doesn't need parenthesis and precedence as it's encoded in the notation.
+We can implement commands for the operations.
 Here is one for the addition:
 
     struct AddCommand : pfx::Command
@@ -219,6 +219,8 @@ Here is one for the addition:
             }
         }
     };
+
+For simplicity it doesn't do type coercion, both types must be the same, and it will add the integers, the floats and concatenate the strings.
 
 The corresponding main program registration is like this:
 
@@ -318,7 +320,7 @@ This is a tricky part. It's introduced like this:
 It exploits the fact that all command nodes of the same name are identical.
 Change the command of one, the meaning of all changes.
 
-This command is registered as the "let" command from now ion.
+This command is registered as the "let" command from now on.
 
 Now we can write things like:
 
@@ -350,7 +352,7 @@ Adding this to the `//` command word, then you can comment stuff like this:
     // ( Stuff to
      comment out )
 
-This exploit the fact the group nodes are single nodes.
+This exploits the fact that the group nodes are single nodes.
 
 
 ### Adding if statement
@@ -390,6 +392,8 @@ Now we can write a program that solves the quadratic equation.
         println list ( "Solution 2: " x2 )
         list ( x1 x2 )
     )
+    
+This code evaluates to a group node that contains the solutions or an empty group when there are no solutions.
 
 ## Conclusion
 
