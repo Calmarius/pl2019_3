@@ -20,7 +20,7 @@ And needs doxygen to generate the docs.
 
 That's it.
 
-On other systems: just compile the _.cpp in libpfx as a library to get the corresponding object file.
+On other systems: all sources are included into files starting with _. So you only need to compile that single file.
 
 
 ---------
