@@ -14,6 +14,6 @@ $(PFX_LIB):
 	$(MAKE) -C $(PFX_DIR)
 
 sample: $(SRCS) $(PFX_LIB)
-	$(CXX) $(CXXFLAGS) _.cpp -iquote$(INCLUDE_DIR) $(PFX_LIB) -o $@
+	$(CXX) $(CXXFLAGS) _example.cpp -iquote$(INCLUDE_DIR) $(PFX_LIB) -o $@
 
 .PHONY: all clean $(PFX_LIB)

@@ -15,7 +15,7 @@ $(PFX_LIB):
 	$(MAKE) -C $(PFX_DIR)
 
 $(EXE_NAME): $(SRCS) $(PFX_LIB)
-	$(CXX) $(CXXFLAGS) _.cpp -iquote$(INCLUDE_DIR) $(PFX_LIB) -o $@
+	$(CXX) $(CXXFLAGS) _test.cpp -iquote$(INCLUDE_DIR) $(PFX_LIB) -o $@
 	valgrind --leak-check=full --error-exitcode=42 ./$(EXE_NAME)
 
 .PHONY: all clean $(PFX_LIB)

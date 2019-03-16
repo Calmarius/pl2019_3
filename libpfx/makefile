@@ -12,7 +12,7 @@ clean:
 	rm -f $(LIBNAME)
 
 libpfx.a: $(SRCS)
-	$(CXX) $(CXXFLAGS)  -c  impl/_.cpp -o _.o
+	$(CXX) $(CXXFLAGS)  -c  impl/_libpfx.cpp -o _.o
 	$(AR) rcs $(LIBNAME) _.o
 	rm *.o
 
