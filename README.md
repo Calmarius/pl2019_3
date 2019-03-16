@@ -36,16 +36,16 @@ The rest of the characters are part of the language without exception.
 ## The tokens
 
 One higher level the language is comprised of tokens.
-A token is a sequence on non-whitespace characters like `foo`, or a sequence of non-quote characters between quotes, e.g.. `"foo bar"`.
+A token is a sequence on non-whitespace characters like `foo`, or a sequence of non-quote characters between quotes, e.g. `"foo bar"`.
 In this quoted form the quotes themselves are escaped as doubling the quotes, e.g. `"Quote in string ""like this"". "`
 And this is the only escape sequence in the language.
 
 ## The nodes
 
 Then the tokens are arranged into a tree structure as nodes.
-There are several kind of nodes.
+There are several kinds of nodes.
 
-First of all quoted tokens are always turned into string nodes.
+First of all, quoted tokens are always turned into string nodes.
 Non-quoted tokens are interpreted as follows:
 
 - If the token can fully be interpreted as an integer, then an integer node is created with the parsed value.
@@ -57,14 +57,14 @@ I deliberately not defined how integers and floats are parsed, as you can use yo
 For the C++ code in this repo I used strtol for the integers strtod for the floats.
 Also I didn't define the ranges of the integer and float to allow the implementers use their own.
 
-## Types of nodes and their operations.
+## Types of nodes and their operations
 
 There are 4 basic operations on the nodes:
 
-- ToInteger: gets the integer value out of the node.
-- ToFloat: gets the floating point value from the node.
-- ToString: gets the string value of the node.
-- Evaluate(argumentIterator): evaluates the node, creates a new node in the process. This operation also has access to an iterator the allows the node to gets its arguments.
+- **ToInteger**: It gets the integer value out of the node.
+- **ToFloat**: It gets the floating point value from the node.
+- **ToString**: It gets the string value of the node.
+- **Evaluate(argumentIterator)**: It evaluates the node, creates a new node in the process. This operation also has access to an iterator the allows the node to gets its arguments.
 
 These operations behave differently for each node type.
 
@@ -72,38 +72,38 @@ These operations behave differently for each node type.
 
 This node is immutable.
 
-- ToInteger: just returns the stored value.
-- ToFloat: just returns the stored value converted to float.
-- ToString: turns the stored value into string. (In the C++ code I used the %d printf format).
-- Evaluate: Returns a reference to itself.
+- **ToInteger**: It just returns the stored value.
+- **ToFloat**: It just returns the stored value converted to float.
+- **ToString**: It turns the stored value into string. (In the C++ code I used the %d printf format).
+- **Evaluate**: It returns a reference to itself.
 
 ### Float node
 
 This node is immutable.
 
-- ToInteger: just returns the stored value converted to integer.
-- ToFloat: just returns the stored value.
-- ToString: turns the stored value into string. (In the C++ code I used the %g printf format).
-- Evaluate: Returns a reference to itself.
+- **ToInteger**: It returns the stored value converted to integer.
+- **ToFloat**: It returns the stored value.
+- **ToString**: It turns the stored value into string. (In the C++ code I used the %g printf format).
+- **Evaluate**: It returns a reference to itself.
 
 ### String node
 
 This node is immutable.
 
-- ToInteger: just returns the stored value converted to integer. (In the C++ code I used strtol)
-- ToFloat: just returns the stored value converted to float. (In the C++ code I used strtod)
-- ToString: returns the stored value.
-- Evaluate: Returns a reference to itself.
+- **ToInteger**: It just returns the stored value converted to integer. (In the C++ code I used strtol)
+- **ToFloat**: It just returns the stored value converted to float. (In the C++ code I used strtod)
+- **ToString**: It returns the stored value.
+- **Evaluate**: It returns a reference to itself.
 
 ### Command node
 
 This node contains an user defined callback object that manages the execution of this command.
 Before the parsing the user must register these callbacks for each command word so during parsing the parser can bind them to the actual command nodes.
 
-- ToInteger: returns 0.
-- ToFloat: returns 0.0.
-- ToString: returns the token text.
-- Evaluate: Executes the user provided callback an returns the new node it creates.
+- **ToInteger**: It returns 0.
+- **ToFloat**: It returns 0.0.
+- **ToString**: It returns the token text.
+- **Evaluate**: It executes the user provided callback an returns the new node it creates.
 
 During parsing each identical command word will be made to refer to the same command callback.
 The command callback can be stateful, and this fact can be abused to introduce variables to the language.
@@ -112,26 +112,26 @@ The command callback can be stateful, and this fact can be abused to introduce v
 
 This kind of node arises only during the executing typically indicating the case when no meaningful result can be provided.
 
-- ToInteger: returns 0.
-- ToFloat: returns 0.0.
-- ToString: returns empty string.
-- Evaluate: Returns itself.
+- **ToInteger**: It returns 0.
+- **ToFloat**: It returns 0.0.
+- **ToString**: It returns empty string.
+- **Evaluate**: It returns itself.
 
 ### Group node
 
-- ToInteger: returns 0.
-- ToFloat: returns 0.0.
-- ToString: converts each child node to string and then concatenates these strings as a result.
-- Evaluate: iterates over child nodes and evaluate each of them. The evaluation of the last node will be the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evaluate more nodes (their arguments basically).
-- Evaluate all: this is an operation specific to the group nodes. It does something similar that the Evaluate method does, but instead of just returning the result of the last evaluation it returns an new group node that contains the results of all evaluations that took place during the iteration.
+- **ToInteger**: It returns 0.
+- **ToFloat**: It returns 0.0.
+- **ToString**: It converts each child node to string and then concatenates these strings as a result.
+- **Evaluate**: It iterates over child nodes and evaluate each of them. The evaluation of the last node will be the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evaluate more nodes (their arguments basically).
+- **Evaluate all**: It this is an operation specific to the group nodes. It does something similar that the Evaluate method does, but instead of just returning the result of the last evaluation it returns an new group node that contains the results of all evaluations that took place during the iteration.
 
 ## Argument iterators
 
 When evaluating a group an argument iterator is created.
 This argument iterator has 2 main operations:
 
-- fetchNext: it just fetches the next node without evaluating.
-- evaluateNext: it fetches the next node and evaluate it. It passes itself as an argument to the evaluation, so the evaluated node can read more nodes.
+- **fetchNext**: It just fetches the next node without evaluating.
+- **evaluateNext**: It fetches the next node and evaluate it. It passes itself as an argument to the evaluation, so the evaluated node can read more nodes.
 
 The evaluateNext should be used when you expect to read simple values like numbers or strings. If you want to read group nodes or commands, use fetchNext and check the type.
 
