@@ -13,14 +13,15 @@ Internally it uses the pfx name, which is named this way because the language us
 
 Only Linux builds available.
 
-But I kept is as simple as possible: just compile the _.cpp in libpfx as a library to get the corresponding object file.
-
 Just issue "make" and install the packages it complain about missing. It should work then.
 
 It needs valgrind to run the unit tests and check memory stuff.
 And needs doxygen to generate the docs.
 
 That's it.
+
+On other systems: just compile the _.cpp in libpfx as a library to get the corresponding object file.
+
 
 ---------
 

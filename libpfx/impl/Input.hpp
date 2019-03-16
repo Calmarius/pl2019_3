@@ -5,11 +5,14 @@ namespace pfx
 /// Keeps track of the character position while reading characters.
 class Input
 {
-    std::ifstream fileStream;
-    std::istream *inputStream;
-    std::stringstream sstream;
+public:
+    std::unique_ptr<std::istream> inputStream;
     const char *fn;
-    int column = 0;
+    int column = 0; // Zero based but we add +1 when turning it to string.
+    /* The general idea is to determine the line count by counting carriage
+     * returns and line feeds. Whichever has more it determines the count of
+     * lines, this works well with \n and \r\n and \r line endings.
+     */
     int crCount = 0;
     int lfCount = 0;
     int tabSize;
@@ -29,10 +32,10 @@ public:
      * @param [in] tabSize The number of spaces in a tab stop.
      */
     Input(const char *filename, std::string source, int tabSize = 4)
-        : sstream(source), tabSize(tabSize)
+        : tabSize(tabSize)
     {
+        inputStream = std::make_unique<std::stringstream>(source);
         fn = filename;
-        inputStream = &sstream;
     }
 
     /**

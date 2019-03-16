@@ -7,10 +7,12 @@ void Context::setCommand(const std::string &name,
 
     if (iter == commands.end())
     {
+        // New command
         commands[name] = std::make_shared<CommandNode>(command, name);
     }
     else
     {
+        // Existing command overwrite.
         iter->second->prettyName = name;
         iter->second->command = command;
     }
@@ -42,12 +44,23 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
 
     while (readWord(input, token))
     {
+        // For each word...
         char *endptr;
         GroupNode *currentGroup = groupStack.top().get();
+
+        if (token.quoted)
+        {
+            // Quoted strings always create a string node.
+            std::shared_ptr<Node> newNode =
+                std::make_shared<StringNode>(token.word);
+            currentGroup->nodes.push_back(NodeInfo(newNode, token));
+            continue;
+        }
 
         int intValue = strtol(token.word.c_str(), &endptr, 10);
         if (*endptr == '\0')
         {
+            // The whole word parsed as int.
             std::shared_ptr<Node> newNode =
                 std::make_shared<IntegerNode>(intValue);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
@@ -57,6 +70,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         double floatValue = strtod(token.word.c_str(), &endptr);
         if (*endptr == '\0')
         {
+            // The whole word parsed as double.
             std::shared_ptr<Node> newNode =
                 std::make_shared<FloatNode>(floatValue);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
@@ -78,42 +92,37 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
             groupStack.pop();
             if (groupStack.size() == 0)
             {
+                // We popped the root node, it shouldn't happen.
                 throw error::ClosingBraceWithoutOpeningOne(token.start);
             }
             groupStack.top()->nodes.back().end = token.end;
             continue;
         }
 
-        if (token.quoted)
+        // The default case is that the word is a command.
+        auto cmd = commands.find(token.word);
+
+        std::shared_ptr<Node> newNode;
+        if (cmd == commands.end())
         {
-            std::shared_ptr<Node> newNode =
-                std::make_shared<StringNode>(token.word);
-            currentGroup->nodes.push_back(NodeInfo(newNode, token));
+            // Unregistered commands will get the UndefinedCommand handler
+            // registered for them.
+            std::shared_ptr<CommandNode> tmp = std::make_shared<CommandNode>(
+                std::make_shared<UndefinedCommand>(token.start), token.word);
+            commands[token.word] = tmp;
+            newNode = tmp;
         }
         else
         {
-            auto cmd = commands.find(token.word);
-
-            std::shared_ptr<Node> newNode;
-            if (cmd == commands.end())
-            {
-                std::shared_ptr<CommandNode> tmp =
-                    std::make_shared<CommandNode>(
-                        std::make_shared<UndefinedCommand>(token.start),
-                        token.word);
-                commands[token.word] = tmp;
-                newNode = tmp;
-            }
-            else
-            {
-                newNode = cmd->second;
-            }
-
-            currentGroup->nodes.push_back(NodeInfo(newNode, token));
+            // For registered commands the registered node is reused.
+            newNode = cmd->second;
         }
+
+        currentGroup->nodes.push_back(NodeInfo(newNode, token));
     }
     if (groupStack.size() > 1)
     {
+        // At the end only the root node must be on the stack.
         throw error::ClosingBraceExpected(token.start);
     }
 
@@ -127,6 +136,7 @@ std::shared_ptr<Command> Context::getCommand(const std::string &name)
 
     if (iter == commands.end())
     {
+        // When not found we return null.
         return std::shared_ptr<Command>();
     }
     return iter->second->command;

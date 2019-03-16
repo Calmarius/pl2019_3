@@ -88,9 +88,11 @@ bool readWord(Input &input, Token &token)
     else
     {
         // Non-quoted
-        while (!input.eof() && !isWhitespace(input.peek()))
+        while (!isWhitespace(input.peek()))
         {
-            token.word.push_back(input.get());
+            int c = input.get();
+            if (c == -1) break;
+            token.word.push_back(c);
         }
     }
     token.end = input.getPosition();

@@ -5,8 +5,11 @@
 
 int main()
 {
+    /* I have to admit I added only regressions here. Because I was too lazy to
+     * test the obvious...
+     */
     {
-        printf("Nonexisting file.\n");
+        printf("Non existing file.\n");
         bool exceptionThrown = false;
         try
         {
@@ -38,5 +41,77 @@ int main()
         pfx::ArgIterator iter;
 
         assert(dynamic_cast<pfx::NullNode *>(iter.next().get()));
+    }
+
+    {
+        printf("Test the node types.\n");
+
+        pfx::Input input(
+            "", R"( "string" 42 42.5 "42" "42.3" x)"); //< This also tests the
+                                                       // case where there are
+                                                       // no whitespace at the
+                                                       // end of file.
+        pfx::Context ctx;
+        pfx::NodeRef n = ctx.compileCode(input);
+        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode *>(n.get());
+
+        assert(gn);
+        assert(gn->nodes.size() == 6);
+        assert(gn->nodes[0].node->getType() == pfx::NodeType::String);
+        assert(gn->nodes[0].node->toString() == "string");
+
+        assert(gn->nodes[1].node->getType() == pfx::NodeType::Integer);
+        assert(gn->nodes[1].node->toInteger() == 42);
+
+        assert(gn->nodes[2].node->getType() == pfx::NodeType::FloatingPoint);
+        assert(gn->nodes[2].node->toDouble() == 42.5);
+
+        assert(gn->nodes[3].node->getType() == pfx::NodeType::String);
+        assert(gn->nodes[3].node->toString() == "42");
+
+        assert(gn->nodes[4].node->getType() == pfx::NodeType::String);
+        assert(gn->nodes[4].node->toString() == "42.3");
+
+        assert(gn->nodes[5].node->getType() == pfx::NodeType::Command);
+        assert(gn->nodes[5].node->toString() == "x");
+    }
+
+    {
+        printf("Test if I got the tab stop right...\n");
+        pfx::Context ctx;
+        pfx::Input input = pfx::Input("", "\tx");
+        pfx::NodeRef n = ctx.compileCode(input);
+        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode *>(n.get());
+        assert(gn);
+        assert(gn->nodes.size() == 1);
+        assert(gn->nodes[0].start.column == 5);
+
+        input = pfx::Input("", " \tx");
+        n = ctx.compileCode(input);
+        gn = dynamic_cast<pfx::GroupNode *>(n.get());
+        assert(gn);
+        assert(gn->nodes.size() == 1);
+        assert(gn->nodes[0].start.column == 5);
+
+        input = pfx::Input("", "  \tx");
+        n = ctx.compileCode(input);
+        gn = dynamic_cast<pfx::GroupNode *>(n.get());
+        assert(gn);
+        assert(gn->nodes.size() == 1);
+        assert(gn->nodes[0].start.column == 5);
+
+        input = pfx::Input("", "   \tx");
+        n = ctx.compileCode(input);
+        gn = dynamic_cast<pfx::GroupNode *>(n.get());
+        assert(gn);
+        assert(gn->nodes.size() == 1);
+        assert(gn->nodes[0].start.column == 5);
+
+        input = pfx::Input("", "    \tx");
+        n = ctx.compileCode(input);
+        gn = dynamic_cast<pfx::GroupNode *>(n.get());
+        assert(gn);
+        assert(gn->nodes.size() == 1);
+        assert(gn->nodes[0].start.column == 9);
     }
 }

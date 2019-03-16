@@ -1,13 +1,13 @@
 namespace pfx
 {
-Input::Input(const char *file, int tabSize) : fileStream(file), tabSize(tabSize)
+Input::Input(const char *file, int tabSize) : tabSize(tabSize)
 {
-    if (!fileStream)
+    inputStream = std::make_unique<std::ifstream>(file, std::ios::binary);
+    if (!*inputStream)
     {
         throw error::FailedToOpenFile(
             Position(), ssprintf("%s: %s", file, strerror(errno)));
     }
-    inputStream = &fileStream;
     fn = file;
 }
 
@@ -19,8 +19,9 @@ int Input::get()
     {
     case '\t':
     {
-        column++;
+        // Then round it up to the next tab stop.
         column /= tabSize;
+        column++;
         column *= tabSize;
     }
     break;
