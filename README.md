@@ -105,7 +105,7 @@ Before the parsing the user must register these callbacks for each command word 
 - **ToString**: It returns the token text.
 - **Evaluate**: It executes the user provided callback an returns the new node it creates.
 
-During parsing each identical command word will be made to refer to the same command callback.
+During parsing each identical command word is made to refer to the same command callback.
 The command callback can be stateful, and this fact can be abused to introduce variables to the language.
 
 ### Null node
@@ -122,7 +122,7 @@ This kind of node arises only during the executing typically indicating the case
 - **ToInteger**: It returns 0.
 - **ToFloat**: It returns 0.0.
 - **ToString**: It converts each child node to string and then concatenates these strings as a result.
-- **Evaluate**: It iterates over child nodes and evaluate each of them. The evaluation of the last node will be the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evaluate more nodes (their arguments basically).
+- **Evaluate**: It iterates over child nodes and evaluate each of them. The evaluation of the last node is the result. However the trick is that each of the nodes are being evaluated receives the loop iterator, so they can fetch or evaluate more nodes (their arguments basically).
 - **Evaluate all**: It this is an operation specific to the group nodes. It does something similar that the Evaluate method does, but instead of just returning the result of the last evaluation it returns an new group node that contains the results of all evaluations that took place during the iteration.
 
 ## Argument iterators
@@ -220,7 +220,7 @@ Here is one for the addition:
         }
     };
 
-For simplicity it doesn't do type coercion, both types must be the same, and it will add the integers, the floats and concatenate the strings.
+For simplicity it doesn't do type coercion, both types must be the same, and it adds the integers, the floats and concatenates the strings.
 
 The corresponding main program registration is like this:
 
@@ -260,7 +260,7 @@ Now we can write:
     println list ( "The answer is: " + 20 22 )
 
 The result of the list command is the group `( "The answer is: " 42 )`.
-Which will be passed to the println which converts it to string.
+Which is passed to the println which converts it to string.
 We know that converting a group to string causes all its child nodes converted to string and then concatenated.
 So it should print `"The answer is: 42"`.
 
@@ -329,7 +329,7 @@ Now we can write things like:
     let c + a b
     println list ( "The c is: " c )
 
-It will write `The c is: 5`.
+It writes `The c is: 5`.
 
 ### Adding comments
 
@@ -374,7 +374,7 @@ The if statement functions as the conditional operator as well. It's implemented
     };
 
 It evaluates the condition, then fetches the next two nodes.
-If the condition, when converted to integer, evaluates to non-zero it will evaluate the "then part", otherwise the "else part".
+If the condition, when converted to integer, evaluates to non-zero it evaluates the "then part", otherwise the "else part".
 
 Now we can write a program that solves the quadratic equation.
 
