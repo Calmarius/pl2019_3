@@ -62,6 +62,7 @@ bool readWord(Input &input, Token &token)
     }
     if (input.eof())
     {
+        // Reached the end, we are done.
         return false;
     }
     // Read the word
@@ -71,10 +72,14 @@ bool readWord(Input &input, Token &token)
         // Quoted string mode.
         while (input.peek() == '"')
         {
+            // This loop is here to handle escaped quotes.
             input.get();
-            while (!input.eof() && input.peek() != '"')
+            while (input.peek() != '"')
             {
-                token.word.push_back(input.get());
+                // Read everything until quote.
+                int c = input.get();
+                if (c == EOF) break;
+                token.word.push_back(c);
             }
             input.get();
             if (input.peek() == '"')
@@ -90,8 +95,9 @@ bool readWord(Input &input, Token &token)
         // Non-quoted
         while (!isWhitespace(input.peek()))
         {
+            // Read until next whitespace (or end of file.)
             int c = input.get();
-            if (c == -1) break;
+            if (c == EOF) break;
             token.word.push_back(c);
         }
     }

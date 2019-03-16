@@ -11,6 +11,8 @@ class GroupNode;
 /// Defines the context from which the library can be used.
 class Context
 {
+    // Map command names to nodes. All command nodes with identical text are the
+    // same.
     std::map<std::string, std::shared_ptr<CommandNode>> commands;
 
 public:

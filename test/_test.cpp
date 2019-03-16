@@ -114,4 +114,13 @@ int main()
         assert(gn->nodes.size() == 1);
         assert(gn->nodes[0].start.column == 9);
     }
+
+    {
+        printf("Escaped quotes.\n");
+        pfx::Input input("", R"( "Quoted string ""like this""." )");
+
+        pfx::Token t;
+        assert(pfx::readWord(input, t));
+        assert(t.word == R"(Quoted string "like this".)");
+    }
 }

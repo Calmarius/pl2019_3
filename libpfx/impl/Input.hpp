@@ -6,13 +6,17 @@ namespace pfx
 class Input
 {
 public:
+    // Can be a file stream, string stream or whatever.
     std::unique_ptr<std::istream> inputStream;
-    const char *fn;
+
+    const char *fn; // Filename is just stored to know what to report.
+
     int column = 0; // Zero based but we add +1 when turning it to string.
     /* The general idea is to determine the line count by counting carriage
      * returns and line feeds. Whichever has more it determines the count of
      * lines, this works well with \n and \r\n and \r line endings.
      */
+
     int crCount = 0;
     int lfCount = 0;
     int tabSize;

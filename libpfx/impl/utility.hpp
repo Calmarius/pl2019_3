@@ -24,4 +24,17 @@ int stringToInteger(const std::string &string);
  * @return The floating point representation.
  */
 double stringToDouble(const std::string &string);
+
+
+class Input;
+class Token;
+/**
+ * Reads a word from the input.
+ *
+ * @param [in,out] input The input to read the word from.
+ * @param [out] token The token read.
+ *
+ * @return True if a word is read, false otherwise.
+ */
+bool readWord(Input &input, Token &token);
 } // namespace pfx
