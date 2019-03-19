@@ -128,7 +128,7 @@ struct FunctionRunner : pfx::Command
         {
             try
             {
-                result = body->evaluate();
+                result = currentBody->evaluate();
                 break;
             }
             catch (const TRecRequest &trecRequest)

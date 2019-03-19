@@ -1,0 +1,1 @@
+Function runner must store specifc type pointers to avoid downcasting all the time.
