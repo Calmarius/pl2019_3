@@ -36,7 +36,7 @@ while ( < x 10 )
 // "Returns a list with the solutions
     empty list when there are no solutions."
 
-function solveQuadratic ( a b c ) ( d x1 x2 )
+bind solveQuadratic lambda ( a b c ) ( d x1 x2 )
 (
     // "Coerce them to float"
     let a float a
@@ -68,13 +68,15 @@ println list ( "Global A is: " a )
 println list ( "Global B is: " b )
 println list ( "Global C is: " c )
 
-function square ( x ) ( ) ( * x x )
+bind square lambda ( x ) ( ) ( * x x )
 
 println square square 3
 
 dump map fetch square list ( 1 2 3 4 5 6 7 )
 dump map fetch sqrt list ( 1 2 3 4 5 6 7 )
 dump map lambda ( x ) ( ) ( * 2 x ) list ( 10 20 30 )
+
+
 
 
 
