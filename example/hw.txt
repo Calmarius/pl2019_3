@@ -74,6 +74,7 @@ println square square 3
 
 dump map fetch square list ( 1 2 3 4 5 6 7 )
 dump map fetch sqrt list ( 1 2 3 4 5 6 7 )
+dump map lambda ( x ) ( ) ( * 2 x ) list ( 10 20 30 )
 
 
 

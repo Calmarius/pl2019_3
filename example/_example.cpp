@@ -422,14 +422,56 @@ struct FunctionRunner : pfx::Command
     }
 };
 
+std::shared_ptr<FunctionRunner> createLambda(pfx::ArgIterator &iter)
+{
+    pfx::Position pos = iter.getPosition();
+    pfx::NodeRef argsGroupRef = iter.fetchNext();
+    pfx::GroupNode *argsGroup =
+        dynamic_cast<pfx::GroupNode *>(argsGroupRef.get());
+    if (!argsGroup)
+    {
+        pos.raiseErrorHere("Group node expected (for arguments)");
+    }
+
+    pos = iter.getPosition();
+    pfx::NodeRef localsRef = iter.fetchNext();
+    pfx::GroupNode *locals = dynamic_cast<pfx::GroupNode *>(localsRef.get());
+    if (!locals)
+    {
+        pos.raiseErrorHere("Group node expected (for locals) ");
+    }
+
+    pos = iter.getPosition();
+    pfx::NodeRef bodyRef = iter.fetchNext();
+    pfx::GroupNode *body = dynamic_cast<pfx::GroupNode *>(bodyRef.get());
+    if (!body)
+    {
+        pos.raiseErrorHere("Group node expected (for function body)");
+    }
+
+    for (auto arg : argsGroup->nodes)
+    {
+        if (!dynamic_cast<pfx::CommandNode *>(arg.node.get()))
+        {
+            arg.start.raiseErrorHere("Identifier expected.");
+        }
+    }
+    for (auto arg : locals->nodes)
+    {
+        if (!dynamic_cast<pfx::CommandNode *>(arg.node.get()))
+        {
+            arg.start.raiseErrorHere("Identifier expected.");
+        }
+    }
+
+    return std::make_shared<FunctionRunner>(argsGroupRef, localsRef, bodyRef);
+}
+
 struct FunctionCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
         pfx::NodeRef fNameRef = iter.fetchNext();
-        pfx::NodeRef argsGroupRef = iter.fetchNext();
-        pfx::NodeRef localsRef = iter.fetchNext();
-        pfx::NodeRef bodyRef = iter.fetchNext();
 
         pfx::Position pos = iter.getPosition();
         pfx::CommandNode *fName =
@@ -439,48 +481,17 @@ struct FunctionCommand : pfx::Command
             pos.raiseErrorHere("Identifier expected.");
         }
 
-        pos = iter.getPosition();
-        pfx::GroupNode *argsGroup =
-            dynamic_cast<pfx::GroupNode *>(argsGroupRef.get());
-        if (!argsGroup)
-        {
-            pos.raiseErrorHere("Group node expected (for arguments)");
-        }
-
-        pos = iter.getPosition();
-        pfx::GroupNode *locals =
-            dynamic_cast<pfx::GroupNode *>(localsRef.get());
-        if (!locals)
-        {
-            pos.raiseErrorHere("Group node expected (for locals) ");
-        }
-
-        pos = iter.getPosition();
-        pfx::GroupNode *body = dynamic_cast<pfx::GroupNode *>(bodyRef.get());
-        if (!body)
-        {
-            pos.raiseErrorHere("Group node expected (for function body)");
-        }
-
-        for (auto arg : argsGroup->nodes)
-        {
-            if (!dynamic_cast<pfx::CommandNode *>(arg.node.get()))
-            {
-                arg.start.raiseErrorHere("Identifier expected.");
-            }
-        }
-        for (auto arg : locals->nodes)
-        {
-            if (!dynamic_cast<pfx::CommandNode *>(arg.node.get()))
-            {
-                arg.start.raiseErrorHere("Identifier expected.");
-            }
-        }
-
-        fName->command =
-            std::make_shared<FunctionRunner>(argsGroupRef, localsRef, bodyRef);
+        fName->command = createLambda(iter);
 
         return pfx::NullNode::instance;
+    }
+};
+
+struct LambdaCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        return std::make_shared<pfx::CommandNode>(createLambda(iter));
     }
 };
 
@@ -584,6 +595,7 @@ int main()
 
         ctx.setCommand("let", std::make_shared<LetCommand>());
         ctx.setCommand("function", std::make_shared<FunctionCommand>());
+        ctx.setCommand("lambda", std::make_shared<LambdaCommand>());
         ctx.setCommand("map", std::make_shared<MapCommand>());
         ctx.setCommand("fetch", std::make_shared<FetchCommand>());
 
