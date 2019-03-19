@@ -165,6 +165,35 @@ struct LessCommand : pfx::Command
     }
 };
 
+struct EqualCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef arg1 = iter.evaluateNext();
+        pfx::NodeRef arg2 = iter.evaluateNext();
+
+        if (arg1->getType() != arg2->getType())
+        {
+            return pfx::NullNode::instance;
+        }
+
+        switch (arg1->getType())
+        {
+        case pfx::NodeType::Integer:
+            return std::make_shared<pfx::IntegerNode>(arg1->toInteger() ==
+                                                      arg2->toInteger());
+        case pfx::NodeType::FloatingPoint:
+            return std::make_shared<pfx::IntegerNode>(arg1->toDouble() ==
+                                                      arg2->toDouble());
+        case pfx::NodeType::String:
+            return std::make_shared<pfx::IntegerNode>(arg1->toString() ==
+                                                      arg2->toString());
+        default:
+            return pfx::NullNode::instance;
+        }
+    }
+};
+
 struct SqrtCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
@@ -274,26 +303,6 @@ struct ReadLineCommand : pfx::Command
     }
 };
 
-struct FunctionCommand : pfx::Command
-{
-    pfx::NodeRef execute(pfx::ArgIterator &iter) override
-    {
-        pfx::NodeRef fNameRef = iter.fetchNext();
-
-        pfx::Position pos = iter.getPosition();
-        pfx::CommandNode *fName =
-            dynamic_cast<pfx::CommandNode *>(fNameRef.get());
-        if (!fName)
-        {
-            pos.raiseErrorHere("Identifier expected.");
-        }
-
-        fName->command = cpfx::createLambda(iter);
-
-        return pfx::NullNode::instance;
-    }
-};
-
 struct CommentCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
@@ -379,8 +388,8 @@ int main()
         ctx.setCommand("sqrt", std::make_shared<SqrtCommand>());
 
         ctx.setCommand("<", std::make_shared<LessCommand>());
+        ctx.setCommand("=", std::make_shared<EqualCommand>());
 
-        ctx.setCommand("function", std::make_shared<FunctionCommand>());
         ctx.setCommand("map", std::make_shared<MapCommand>());
 
         ctx.setCommand("//", std::make_shared<CommentCommand>());

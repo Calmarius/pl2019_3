@@ -63,8 +63,6 @@ struct FunctionRunner : pfx::Command
 {
     pfx::NodeRef args;
     pfx::NodeRef locals;
-    std::vector<pfx::CommandRef> savedArgs;
-    std::vector<pfx::CommandRef> savedLocals;
     pfx::NodeRef body;
 
     FunctionRunner(pfx::NodeRef args, pfx::NodeRef locals, pfx::NodeRef body)
@@ -74,8 +72,8 @@ struct FunctionRunner : pfx::Command
 
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        savedArgs.clear();
-        savedLocals.clear();
+        std::vector<pfx::CommandRef> savedArgs;
+        std::vector<pfx::CommandRef> savedLocals;
 
         // Save previous meanings of the formal arguments and locals and
         // override them with new meanings.
@@ -261,7 +259,7 @@ void applyCommonPfx(pfx::Context &ctx)
     /**
      * bind >*var >command --> null
      *
-     * Binds the command to var.
+     * Binds the command to var. So now we van use 'var' instead of 'command'.
      */
     ctx.setCommand("bind", std::make_shared<BindCommand>());
 
@@ -288,7 +286,7 @@ void applyCommonPfx(pfx::Context &ctx)
     ctx.setCommand("int", std::make_shared<ToIntCommand>());
 
     /**
-     * lambda *(>arg1 >arg2 ...) *(>local1 >local2 ...) *function-body -->
+     * lambda *(>arg1 >arg2 ...) *(>local1 >local2 ...) *(function-body) -->
      * >function-runner
      *
      * Creates a function expression.
