@@ -79,25 +79,43 @@ dump map lambda ( x ) ( ) ( * 2 x ) list ( 10 20 30 )
 bind fact lambda ( n ) ( ) 
 (
     println list ( "N is: " n )
-    if ( = n 1 ) ( 1 ) ( * n fact - n 1 )
+    if ( = n 1 )
+        ( 1 ) 
+        ( * n fact - n 1 )
 )
 
 println list ( "Factorial of 5 is: " fact 5 )
+
+bind fiborunner lambda ( n s a b ) ( )
+(
+    if = n 0 ( s )
+    (
+        fiborunner - n 1  + s a  s  a
+    )
+)
 
 bind fibo lambda ( n ) ( )
 (
     if ( < n 3 ) ( 1 )
     (
-        + fibo - n 1 fibo - n 2
+        fiborunner - n 2  1 1 0
     )
 )
 
 let x 0
-while ( < x 20 )
+while ( < x 10 )
 (
     println list ( "Fibonacci number " x " is: " fibo x )
     let x + x 1
 )
+
+bind printlist lambda ( x ) ( )
+(
+    println ( "x is: " x )
+    printlist + x 1
+)
+
+// ( printlist 1 )
 
 
 

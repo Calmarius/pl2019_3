@@ -61,35 +61,51 @@ struct ListCommand : pfx::Command
 
 struct FunctionRunner : pfx::Command
 {
-    pfx::NodeRef args;
-    pfx::NodeRef locals;
+    std::vector<pfx::NodeRef> parameters;
+    std::vector<pfx::NodeRef> locals;
     pfx::NodeRef body;
 
-    FunctionRunner(pfx::NodeRef args, pfx::NodeRef locals, pfx::NodeRef body)
-        : args(args), locals(locals), body(body)
+    FunctionRunner(pfx::NodeRef parameters, pfx::NodeRef locals,
+                   pfx::NodeRef body)
+        : body(body)
     {
+        for (auto x : dynamic_cast<pfx::GroupNode *>(parameters.get())->nodes)
+        {
+            this->parameters.push_back(x.node);
+        }
+
+        for (auto x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
+        {
+            this->locals.push_back(x.node);
+        }
     }
 
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        std::vector<pfx::CommandRef> savedArgs;
+        std::vector<pfx::CommandRef> savedVariables;
         std::vector<pfx::CommandRef> savedLocals;
+        std::vector<pfx::NodeRef> args;
+
+        int nParams = parameters.size();
+        while (nParams-- > 0)
+        {
+            args.push_back(iter.evaluateNext());
+        }
 
         // Save previous meanings of the formal arguments and locals and
         // override them with new meanings.
-        for (auto &x : dynamic_cast<pfx::GroupNode *>(args.get())->nodes)
+
+        int i = 0;
+        for (auto &x : parameters)
         {
-            pfx::CommandNode *cn =
-                dynamic_cast<pfx::CommandNode *>(x.node.get());
-            savedArgs.push_back(cn->command);
-            cn->command =
-                std::make_shared<ContainerCommand>(iter.evaluateNext());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
+            savedVariables.push_back(cn->command);
+            cn->command = std::make_shared<ContainerCommand>(args[i++]);
         }
 
-        for (auto &x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
+        for (auto &x : locals)
         {
-            pfx::CommandNode *cn =
-                dynamic_cast<pfx::CommandNode *>(x.node.get());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
             savedLocals.push_back(cn->command);
             cn->command = std::make_shared<ContainerCommand>();
         }
@@ -98,19 +114,17 @@ struct FunctionRunner : pfx::Command
         pfx::NodeRef result = body->evaluate();
 
         // Restore the meanings of the overridden stuff.
-        int i = 0;
-        for (auto &x : dynamic_cast<pfx::GroupNode *>(args.get())->nodes)
+        i = 0;
+        for (auto &x : parameters)
         {
-            pfx::CommandNode *cn =
-                dynamic_cast<pfx::CommandNode *>(x.node.get());
-            cn->command = savedArgs[i++];
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
+            cn->command = savedVariables[i++];
         }
 
         i = 0;
-        for (auto &x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
+        for (auto &x : locals)
         {
-            pfx::CommandNode *cn =
-                dynamic_cast<pfx::CommandNode *>(x.node.get());
+            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
             cn->command = savedLocals[i++];
         }
 
