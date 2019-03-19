@@ -68,8 +68,15 @@ public:
      * further arguments.
      *
      * @return The node representing the result.
+     *
+     * @remarks
+     *  The default behavior is returning itself.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &iterator) const = 0;
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const
+    {
+        return std::const_pointer_cast<Node>(shared_from_this());
+    }
+
 
     /**
      * @return string value from the node. The behavior is implementation
@@ -144,11 +151,6 @@ struct IntegerNode : Node
     /**
      * @return Itself.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
-    {
-        return std::const_pointer_cast<Node>(shared_from_this());
-    }
-
     /**
      * @return NodeType::Integer
      */
@@ -201,14 +203,6 @@ struct FloatNode : Node
     double toDouble() const override
     {
         return value;
-    }
-
-    /**
-     * @return a copy of this node.
-     */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
-    {
-        return std::const_pointer_cast<Node>(shared_from_this());
     }
 
     /**
@@ -327,12 +321,6 @@ struct StringNode : Node
         printf("Quoted string: %s", value.c_str());
     }
 
-    /// @return itself.
-    std::shared_ptr<Node> evaluate(ArgIterator &) const
-    {
-        return std::const_pointer_cast<Node>(shared_from_this());
-    }
-
     /// @return NodeType::String
     virtual NodeType getType() const
     {
@@ -434,12 +422,6 @@ struct NullNode : Node
     void dump(int /*indent*/) const override
     {
         printf("Null");
-    }
-
-    /// @return itself.
-    std::shared_ptr<Node> evaluate(ArgIterator &) const
-    {
-        return std::const_pointer_cast<Node>(shared_from_this());
     }
 
     /// @return NodeType::Null
