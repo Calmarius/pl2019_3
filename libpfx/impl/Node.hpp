@@ -7,7 +7,7 @@ struct Node;
 using NodeRef = std::shared_ptr<Node>;
 
 /// Defines a node, the basic building block of the language.
-class Node
+class Node : public std::enable_shared_from_this<Node>
 {
     // Owned via references, do not copy.
     Node(const Node &) = delete;
@@ -96,7 +96,7 @@ public:
 };
 
 /// This node represents an immutable integer value.
-struct IntegerNode : Node, private std::enable_shared_from_this<IntegerNode>
+struct IntegerNode : Node
 {
     using Node::evaluate;
 
@@ -146,7 +146,7 @@ struct IntegerNode : Node, private std::enable_shared_from_this<IntegerNode>
      */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
-        return std::const_pointer_cast<IntegerNode>(shared_from_this());
+        return std::const_pointer_cast<Node>(shared_from_this());
     }
 
     /**
@@ -159,7 +159,7 @@ struct IntegerNode : Node, private std::enable_shared_from_this<IntegerNode>
 };
 
 /// This node represents an immutable floating point value
-struct FloatNode : Node, private std::enable_shared_from_this<FloatNode>
+struct FloatNode : Node
 {
     using Node::evaluate;
 
@@ -208,7 +208,7 @@ struct FloatNode : Node, private std::enable_shared_from_this<FloatNode>
      */
     virtual std::shared_ptr<Node> evaluate(ArgIterator &) const override
     {
-        return std::const_pointer_cast<FloatNode>(shared_from_this());
+        return std::const_pointer_cast<Node>(shared_from_this());
     }
 
     /**
@@ -288,7 +288,7 @@ struct CommandNode : Node
 };
 
 /// Represents a string value.
-struct StringNode : Node, private std::enable_shared_from_this<StringNode>
+struct StringNode : Node
 {
     using Node::evaluate;
 
@@ -330,7 +330,7 @@ struct StringNode : Node, private std::enable_shared_from_this<StringNode>
     /// @return itself.
     std::shared_ptr<Node> evaluate(ArgIterator &) const
     {
-        return std::const_pointer_cast<StringNode>(shared_from_this());
+        return std::const_pointer_cast<Node>(shared_from_this());
     }
 
     /// @return NodeType::String
@@ -406,7 +406,7 @@ struct GroupNode : Node
 };
 
 /// Represent the null node. Used when no meaningful result available.
-struct NullNode : Node, private std::enable_shared_from_this<NullNode>
+struct NullNode : Node
 {
     using Node::evaluate;
 
@@ -439,7 +439,7 @@ struct NullNode : Node, private std::enable_shared_from_this<NullNode>
     /// @return itself.
     std::shared_ptr<Node> evaluate(ArgIterator &) const
     {
-        return std::const_pointer_cast<NullNode>(shared_from_this());
+        return std::const_pointer_cast<Node>(shared_from_this());
     }
 
     /// @return NodeType::Null
