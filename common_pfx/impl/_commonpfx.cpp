@@ -20,6 +20,19 @@ struct ContainerCommand : pfx::Command
     }
 };
 
+void let(pfx::CommandNode &cmd, pfx::NodeRef value)
+{
+    ContainerCommand *varContainer =
+        dynamic_cast<ContainerCommand *>(cmd.command.get());
+    if (!varContainer)
+    {
+        auto tmp = std::make_shared<ContainerCommand>();
+        cmd.command = tmp;
+        varContainer = tmp.get();
+    }
+    varContainer->ref = value;
+}
+
 struct LetCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
@@ -31,15 +44,8 @@ struct LetCommand : pfx::Command
         pfx::CommandNode *cmd =
             dynamic_cast<pfx::CommandNode *>(variable.get());
         if (!cmd) pos.raiseErrorHere("This is not a variable!");
-        ContainerCommand *varContainer =
-            dynamic_cast<ContainerCommand *>(cmd->command.get());
-        if (!varContainer)
-        {
-            auto tmp = std::make_shared<ContainerCommand>();
-            cmd->command = tmp;
-            varContainer = tmp.get();
-        }
-        varContainer->ref = value;
+
+        let(*cmd, value);
 
         return value;
     }
@@ -57,6 +63,11 @@ struct ListCommand : pfx::Command
 
         return arg;
     }
+};
+
+struct TRecRequest
+{
+    pfx::NodeRef group;
 };
 
 struct FunctionRunner : pfx::Command
@@ -111,7 +122,25 @@ struct FunctionRunner : pfx::Command
         }
 
         // Execute the body
-        pfx::NodeRef result = body->evaluate();
+        pfx::NodeRef currentBody = body;
+        pfx::NodeRef result;
+        for (;;)
+        {
+            try
+            {
+                result = body->evaluate();
+                break;
+            }
+            catch (const TRecRequest &trecRequest)
+            {
+                /** The tail recursion request can come from many layers deep.
+                 * Throwing an exception allows us to unwind those layers and
+                 * return to nearest executing function. And do the body swap
+                 * there.
+                 */
+                currentBody = trecRequest.group;
+            }
+        }
 
         // Restore the meanings of the overridden stuff.
         i = 0;
@@ -253,6 +282,42 @@ struct BindCommand : pfx::Command
     };
 };
 
+struct TRecCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::Position pos = iter.getPosition();
+        pfx::NodeRef fn = iter.fetchNext();
+
+        pfx::CommandNode *cmd = dynamic_cast<pfx::CommandNode *>(fn.get());
+        if (!fn)
+        {
+            pos.raiseErrorHere("Command node expected.");
+        }
+        FunctionRunner *fr = dynamic_cast<FunctionRunner *>(cmd->command.get());
+        if (!fr)
+        {
+            pos.raiseErrorHere("Runnable function expected..");
+        }
+
+        std::vector<pfx::NodeRef> args;
+        int nParams = fr->parameters.size();
+
+        while (nParams-- > 0)
+        {
+            args.push_back(iter.evaluateNext());
+        }
+
+        int i = 0;
+        for (auto &x : fr->parameters)
+        {
+            let(*dynamic_cast<pfx::CommandNode *>(x.get()), args[i++]);
+        }
+
+        throw TRecRequest{fr->body};
+    }
+};
+
 
 void applyCommonPfx(pfx::Context &ctx)
 {
@@ -317,7 +382,7 @@ void applyCommonPfx(pfx::Context &ctx)
     /**
      * let >*varName value  --> value
      *
-     * Assign the fiven variable to the value.
+     * Assign the given variable to the value.
      */
     ctx.setCommand("let", std::make_shared<LetCommand>());
 
@@ -336,6 +401,20 @@ void applyCommonPfx(pfx::Context &ctx)
      * Coerces the evaluated node's value to string.
      */
     ctx.setCommand("string", std::make_shared<ToStringCommand>());
+
+    /**
+     * trec >functionNode --> null
+     *
+     * Tail recursive call to the given function. Sort of.
+     * The argument node must be a command node and must be bound to a function.
+     *
+     * It then evaluates the required amount of arguments, alters the given
+     * variables (without saving them!) and then sets the current argument
+     * iterator to point to its function body. This way the function can be
+     * executed without recursion and without the risk of running out of stack.
+     *
+     */
+    ctx.setCommand("trec", std::make_shared<TRecCommand>());
 }
 
 } // namespace cpfx

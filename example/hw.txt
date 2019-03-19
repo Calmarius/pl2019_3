@@ -111,11 +111,17 @@ while ( < x 10 )
 
 bind printlist lambda ( x ) ( )
 (
-    println ( "x is: " x )
-    printlist + x 1
+    if ( < x 100000 )
+    (
+        println ( "x is: " x )
+        trec printlist + x 1
+    )
+    (
+        42
+    )
 )
 
-// ( printlist 1 )
+println list ( "The result of printlist is: " printlist 1 )
 
 
 

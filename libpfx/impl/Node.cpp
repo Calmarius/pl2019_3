@@ -54,15 +54,14 @@ std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter) const
 
 std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
 {
-    const auto end = nodes.end();
     std::shared_ptr<Node> resultNode = NullNode::instance;
 
     /* Evaluate each node, but pass the iterator to the nodes just in case
      they would like to fetch more nodes.*/
-    for (auto i = nodes.begin(); i != nodes.end();)
+    ArgIterator iter(nodes.begin(), nodes.end());
+    while (!iter.ended())
     {
-        ArgIterator iter(i, end);
-        resultNode = (i++)->node->evaluate(iter);
+        resultNode = iter.evaluateNext();
     }
     return resultNode;
 }
@@ -72,15 +71,12 @@ std::shared_ptr<GroupNode> GroupNode::evaluateAll() const
 {
     auto newGroupNode = std::make_shared<GroupNode>();
 
-    auto end = nodes.end();
-
     /* Evaluate each node, but pass the iterator to the nodes just in case
      they would like to fetch more nodes.*/
-    for (auto i = nodes.begin(); i != end;)
+    ArgIterator iter(nodes.begin(), nodes.end());
+    while (!iter.ended())
     {
-        ArgIterator tmp(i, end);
-
-        newGroupNode->nodes.push_back((i++)->node->evaluate(tmp));
+        newGroupNode->nodes.push_back(iter.evaluateNext());
     }
     return newGroupNode;
 }

@@ -11,12 +11,12 @@ class ArgIterator
 {
 private:
     typedef std::vector<NodeInfo>::const_iterator IteratorType;
-    IteratorType &current;
-    IteratorType end;
 
     static IteratorType dummy;
 
 public:
+    IteratorType current;
+    IteratorType end;
     /**
      * Default constructor creates a dummy iterator. That's immediately on the
      * end and returns null nodes.
@@ -31,7 +31,7 @@ public:
      * @param [in] current The iterator the element where the iteration start.
      * @param [in] end The iterator the points one after the last element.
      */
-    ArgIterator(IteratorType &current, IteratorType end)
+    ArgIterator(IteratorType current, IteratorType end)
         : current(current), end(end)
     {
     }
