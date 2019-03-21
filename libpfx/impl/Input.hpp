@@ -35,7 +35,7 @@ public:
      * @param [in] source The source code to test.
      * @param [in] tabSize The number of spaces in a tab stop.
      */
-    Input(const char *filename, std::string source, int tabSize = 4)
+    Input(const char *filename, const std::string &source, int tabSize = 4)
         : tabSize(tabSize)
     {
         inputStream = std::make_unique<std::stringstream>(source);

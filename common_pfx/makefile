@@ -17,5 +17,9 @@ $(PFX_LIB):
 clean:
 	rm -f $(LIBNAME)
 
+test: $(PFX_LIB)
+	$(CXX) $(CXXFLAGS) -DUNITTEST impl/_commonpfx.cpp $(PFX_LIB) -o test
+	./test
+	rm test
 
-.PHONY: $(PFX_LIB) clean
+.PHONY: $(PFX_LIB) clean test

@@ -418,3 +418,62 @@ void applyCommonPfx(pfx::Context &ctx)
 }
 
 } // namespace cpfx
+
+#define UNITTEST
+
+#ifdef UNITTEST
+
+#undef NDEBUG
+
+#include <assert.h>
+
+struct AssertCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef a = iter.evaluateNext();
+        pfx::NodeRef b = iter.evaluateNext();
+
+        assert(a->getType() == b->getType());
+        switch (a->getType())
+        {
+        case pfx::NodeType::FloatingPoint:
+            assert(a->toDouble() == b->toDouble());
+            break;
+        case pfx::NodeType::Integer:
+            assert(a->toInteger() == b->toInteger());
+            break;
+        case pfx::NodeType::String:
+            assert(a->toString() == b->toString());
+            break;
+        default:
+            assert(false);
+        }
+
+        return pfx::NullNode::instance;
+    }
+};
+
+
+void run(std::string str)
+{
+    pfx::Input input("", str);
+    pfx::Context ctx;
+
+    cpfx::applyCommonPfx(ctx);
+    ctx.setCommand("assert", std::make_shared<AssertCommand>());
+
+    ctx.compileCode(input)->evaluate();
+}
+
+
+int main()
+{
+    run(R"(let x 42 assert x 42)");
+
+
+    return 0;
+}
+
+
+#endif
