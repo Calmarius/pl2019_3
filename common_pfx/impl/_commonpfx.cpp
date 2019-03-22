@@ -420,37 +420,94 @@ void applyCommonPfx(pfx::Context &ctx)
 } // namespace cpfx
 
 #define UNITTEST
-
 #ifdef UNITTEST
 
 #undef NDEBUG
 
 #include <assert.h>
+#include <stdarg.h>
+
+std::string ssprintfv(const char *format, va_list args)
+{
+    va_list args2;
+    va_copy(args2, args);
+
+    int n = vsnprintf(nullptr, 0, format, args);
+    auto c_str = std::make_unique<char[]>(n + 1);
+    vsnprintf(c_str.get(), n + 1, format, args2);
+    va_end(args2);
+
+    return std::string(c_str.get());
+}
+
+std::string ssprintf(const char *format, ...)
+{
+    va_list args;
+
+    va_start(args, format);
+    std::string ret = ssprintfv(format, args);
+    va_end(args);
+
+    return ret;
+}
+
 
 struct AssertCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
+        pfx::Position pos = iter.getPosition();
         pfx::NodeRef a = iter.evaluateNext();
         pfx::NodeRef b = iter.evaluateNext();
 
-        assert(a->getType() == b->getType());
+        if (a->getType() != b->getType())
+        {
+            pos.raiseErrorHere(ssprintf("Assertion failed. %s != %s\n",
+                                        a->toString().c_str(),
+                                        b->toString().c_str()));
+        }
         switch (a->getType())
         {
         case pfx::NodeType::FloatingPoint:
-            assert(a->toDouble() == b->toDouble());
+            if (a->toDouble() != b->toDouble())
+            {
+                pos.raiseErrorHere(ssprintf("Assertion failed. %s != %s\n",
+                                            a->toString().c_str(),
+                                            b->toString().c_str()));
+            }
             break;
         case pfx::NodeType::Integer:
-            assert(a->toInteger() == b->toInteger());
+            if (a->toInteger() != b->toInteger())
+            {
+                pos.raiseErrorHere(ssprintf("Assertion failed. %s != %s\n",
+                                            a->toString().c_str(),
+                                            b->toString().c_str()));
+            }
             break;
         case pfx::NodeType::String:
-            assert(a->toString() == b->toString());
+            if (a->toString() != b->toString())
+            {
+                pos.raiseErrorHere(ssprintf("Assertion failed. %s != %s\n",
+                                            a->toString().c_str(),
+                                            b->toString().c_str()));
+            }
             break;
         default:
             assert(false);
         }
 
         return pfx::NullNode::instance;
+    }
+};
+
+struct MulCommand : pfx::Command
+{
+    pfx::NodeRef execute(pfx::ArgIterator &iter) override
+    {
+        pfx::NodeRef a = iter.evaluateNext();
+        pfx::NodeRef b = iter.evaluateNext();
+
+        return std::make_shared<pfx::FloatNode>(a->toDouble() * b->toDouble());
     }
 };
 
@@ -462,6 +519,7 @@ void run(std::string str)
 
     cpfx::applyCommonPfx(ctx);
     ctx.setCommand("assert", std::make_shared<AssertCommand>());
+    ctx.setCommand("*", std::make_shared<MulCommand>());
 
     ctx.compileCode(input)->evaluate();
 }
@@ -469,7 +527,39 @@ void run(std::string str)
 
 int main()
 {
-    run(R"(let x 42 assert x 42)");
+    try
+    {
+        printf("Test 1\n");
+        run(R"(let x 42 assert x 42)");
+
+        printf("Test 2\n");
+        run(R"(assert string list ( 42 "foo" "bar" ) "42foobar" )");
+
+        printf("Test 3\n");
+        run(R"(
+            bind square lambda ( x ) ( ) ( * x x ) assert square 7.0 49.0
+        )");
+
+        printf("Test 4\n");
+        run(R"(
+            assert string 7 "7"
+            assert float 7 7.0
+            assert int 7 7
+
+            assert string 7.0 "7"
+            assert float 7.0 7.0
+            assert int 7.0 7
+
+            assert string "7" "7"
+            assert float "7" 7.0
+            assert int "7" 7
+        )");
+    }
+    catch (const pfx::Error &e)
+    {
+        printf("%s\n", e.toString().c_str());
+        assert(false);
+    }
 
 
     return 0;

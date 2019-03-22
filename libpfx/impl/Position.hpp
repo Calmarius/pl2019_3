@@ -10,7 +10,7 @@ struct Position
     int line;       ///< The line in the file.
 
     /// @return A string representation of this structure.
-    std::string toString();
+    std::string toString() const;
 
     /**
      * Raises an exception in this position

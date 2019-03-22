@@ -1,7 +1,7 @@
 namespace pfx
 {
 
-std::string Position::toString()
+std::string Position::toString() const
 {
     return ssprintf("%s %d:%d", fn, line, column);
 }

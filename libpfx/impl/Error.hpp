@@ -23,7 +23,7 @@ struct Error
      * @return The string representation of the error. In a "Position: message"
      * format.
      */
-    std::string toString();
+    std::string toString() const;
 };
 
 /// @cond FALSE
