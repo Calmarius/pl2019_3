@@ -331,31 +331,25 @@ struct MapCommand : pfx::Command
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
         pfx::Position mapPos = iter.getPosition();
-        pfx::NodeRef mapNode = iter.evaluateNext();
+        pfx::CommandRef mapNode = iter.evaluateNext()->asCommand();
         pfx::Position groupPos = iter.getPosition();
-        pfx::NodeRef groupNode = iter.evaluateNext();
+        pfx::GroupRef groupNode = iter.evaluateNext()->asGroup();
 
-        pfx::CommandNode *mapFn =
-            dynamic_cast<pfx::CommandNode *>(mapNode.get());
-        if (!mapFn)
+        if (!mapNode)
         {
             mapPos.raiseErrorHere("Command node expected.");
         }
-        const pfx::GroupNode *group =
-            dynamic_cast<pfx::GroupNode *>(groupNode.get());
-        if (!group)
+        if (!groupNode)
         {
             groupPos.raiseErrorHere("Group node expected");
         }
 
-        std::shared_ptr<pfx::GroupNode> newGroup =
-            std::make_shared<pfx::GroupNode>();
+        pfx::GroupRef newGroup = pfx::createGroup();
 
-        auto begin = group->nodes.begin();
-        pfx::ArgIterator groupIter(begin, group->nodes.end());
+        pfx::ArgIterator groupIter(groupNode->nodes.begin(), groupNode->nodes.end());
         while (!groupIter.ended())
         {
-            newGroup->nodes.push_back(mapFn->evaluate(groupIter));
+            newGroup->nodes.push_back(mapNode->evaluate(groupIter));
         }
 
         return newGroup;
