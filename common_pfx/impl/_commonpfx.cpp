@@ -203,7 +203,7 @@ struct LambdaCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        return std::make_shared<pfx::CommandNode>(createLambda(iter));
+        return pfx::createCommand(createLambda(iter));
     }
 };
 
@@ -219,9 +219,9 @@ struct ToIntCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef arg = iter.evaluateNext();
+        auto arg = iter.evaluateNext();
 
-        return std::make_shared<pfx::IntegerNode>(arg->toInteger());
+        return pfx::createInteger(arg->toInteger());
     }
 };
 
@@ -229,9 +229,9 @@ struct ToFloatCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef arg = iter.evaluateNext();
+        auto arg = iter.evaluateNext();
 
-        return std::make_shared<pfx::FloatNode>(arg->toDouble());
+        return pfx::createFloat(arg->toDouble());
     }
 };
 
@@ -239,9 +239,9 @@ struct ToStringCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef arg = iter.evaluateNext();
+        auto arg = iter.evaluateNext();
 
-        return std::make_shared<pfx::StringNode>(arg->toString());
+        return pfx::createString(arg->toString());
     }
 };
 
@@ -249,20 +249,16 @@ struct BindCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::Position pos = iter.getPosition();
-        pfx::NodeRef bindee = iter.fetchNext();
+        auto pos = iter.getPosition();
+        auto bindeeCmd = iter.fetchNext()->asCommand();
 
-        pfx::CommandNode *bindeeCmd =
-            dynamic_cast<pfx::CommandNode *>(bindee.get());
         if (!bindeeCmd)
         {
             pos.raiseErrorHere("Command expected.");
         }
 
         pos = iter.getPosition();
-        pfx::NodeRef toBind = iter.evaluateNext();
-        pfx::CommandNode *toBindCmd =
-            dynamic_cast<pfx::CommandNode *>(toBind.get());
+        auto toBindCmd = iter.evaluateNext()->asCommand();
         if (!toBindCmd)
         {
             pos.raiseErrorHere("Command expected.");
@@ -278,32 +274,32 @@ struct TRecCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::Position pos = iter.getPosition();
-        pfx::NodeRef fn = iter.fetchNext();
+        auto pos = iter.getPosition();
+        auto cmd = iter.fetchNext()->asCommand();
 
-        pfx::CommandNode *cmd = dynamic_cast<pfx::CommandNode *>(fn.get());
-        if (!fn)
+        if (!cmd)
         {
             pos.raiseErrorHere("Command node expected.");
         }
-        FunctionRunner *fr = dynamic_cast<FunctionRunner *>(cmd->command.get());
+
+        auto *fr = dynamic_cast<FunctionRunner *>(cmd->command.get());
         if (!fr)
         {
             pos.raiseErrorHere("Runnable function expected..");
         }
 
         std::vector<pfx::NodeRef> args;
-        int nParams = fr->parameters.size();
+        auto nParams = fr->parameters.size();
 
         while (nParams-- > 0)
         {
             args.push_back(iter.evaluateNext());
         }
 
-        int i = 0;
+        auto i = int(0);
         for (auto &x : fr->parameters)
         {
-            let(*dynamic_cast<pfx::CommandNode *>(x.get()), args[i++]);
+            let(*x->asCommand(), args[i++]);
         }
 
         throw TRecRequest{fr->body};
