@@ -37,15 +37,13 @@ struct LetCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef variable = iter.fetchNext();
-        pfx::NodeRef value = iter.evaluateNext();
+        auto pos = iter.getPosition();
+        auto variable = iter.fetchNext()->asCommand();
+        auto value = iter.evaluateNext();
 
-        pfx::Position pos = iter.getPosition();
-        pfx::CommandNode *cmd =
-            dynamic_cast<pfx::CommandNode *>(variable.get());
-        if (!cmd) pos.raiseErrorHere("This is not a variable!");
+        if (!variable) pos.raiseErrorHere("This is not a variable!");
 
-        let(*cmd, value);
+        let(*variable, value);
 
         return value;
     }
@@ -55,13 +53,11 @@ struct ListCommand : pfx::Command
 {
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        pfx::NodeRef arg = iter.fetchNext();
-
-        pfx::GroupNode *gn = dynamic_cast<pfx::GroupNode *>(arg.get());
+        auto gn = iter.fetchNext()->asGroup();
 
         if (gn) return gn->evaluateAll();
 
-        return arg;
+        return gn;
     }
 };
 
@@ -72,22 +68,22 @@ struct TRecRequest
 
 struct FunctionRunner : pfx::Command
 {
-    std::vector<pfx::NodeRef> parameters;
-    std::vector<pfx::NodeRef> locals;
-    pfx::NodeRef body;
+    std::vector<pfx::CommandRef> parameters;
+    std::vector<pfx::CommandRef> locals;
+    pfx::GroupRef body;
 
-    FunctionRunner(pfx::NodeRef parameters, pfx::NodeRef locals,
-                   pfx::NodeRef body)
+    FunctionRunner(pfx::GroupRef parameters, pfx::GroupRef locals,
+                   pfx::GroupRef body)
         : body(body)
     {
-        for (auto x : dynamic_cast<pfx::GroupNode *>(parameters.get())->nodes)
+        for (auto x : parameters->nodes)
         {
-            this->parameters.push_back(x.node);
+            this->parameters.push_back(x.node->asCommand());
         }
 
-        for (auto x : dynamic_cast<pfx::GroupNode *>(locals.get())->nodes)
+        for (auto x : locals->nodes)
         {
-            this->locals.push_back(x.node);
+            this->locals.push_back(x.node->asCommand());
         }
     }
 
@@ -109,14 +105,14 @@ struct FunctionRunner : pfx::Command
         int i = 0;
         for (auto &x : parameters)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
+            auto cn = x->asCommand();
             savedVariables.push_back(cn->command);
             cn->command = std::make_shared<ContainerCommand>(args[i++]);
         }
 
         for (auto &x : locals)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
+            auto cn = x->asCommand();
             savedLocals.push_back(cn->command);
             cn->command = std::make_shared<ContainerCommand>();
         }
@@ -146,14 +142,14 @@ struct FunctionRunner : pfx::Command
         i = 0;
         for (auto &x : parameters)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
+            auto cn = x->asCommand();
             cn->command = savedVariables[i++];
         }
 
         i = 0;
         for (auto &x : locals)
         {
-            pfx::CommandNode *cn = dynamic_cast<pfx::CommandNode *>(x.get());
+            auto cn = x->asCommand();
             cn->command = savedLocals[i++];
         }
 
@@ -165,25 +161,21 @@ struct FunctionRunner : pfx::Command
 std::shared_ptr<pfx::Command> createLambda(pfx::ArgIterator &iter)
 {
     pfx::Position pos = iter.getPosition();
-    pfx::NodeRef argsGroupRef = iter.fetchNext();
-    pfx::GroupNode *argsGroup =
-        dynamic_cast<pfx::GroupNode *>(argsGroupRef.get());
+    pfx::GroupRef argsGroup = iter.fetchNext()->asGroup();
     if (!argsGroup)
     {
         pos.raiseErrorHere("Group node expected (for arguments)");
     }
 
     pos = iter.getPosition();
-    pfx::NodeRef localsRef = iter.fetchNext();
-    pfx::GroupNode *locals = dynamic_cast<pfx::GroupNode *>(localsRef.get());
+    pfx::GroupRef locals = iter.fetchNext()->asGroup();
     if (!locals)
     {
         pos.raiseErrorHere("Group node expected (for locals) ");
     }
 
     pos = iter.getPosition();
-    pfx::NodeRef bodyRef = iter.fetchNext();
-    pfx::GroupNode *body = dynamic_cast<pfx::GroupNode *>(bodyRef.get());
+    pfx::GroupRef body = iter.fetchNext()->asGroup();
     if (!body)
     {
         pos.raiseErrorHere("Group node expected (for function body)");
@@ -191,20 +183,20 @@ std::shared_ptr<pfx::Command> createLambda(pfx::ArgIterator &iter)
 
     for (auto arg : argsGroup->nodes)
     {
-        if (!dynamic_cast<pfx::CommandNode *>(arg.node.get()))
+        if (!arg.node->asCommand())
         {
             arg.start.raiseErrorHere("Identifier expected.");
         }
     }
     for (auto arg : locals->nodes)
     {
-        if (!dynamic_cast<pfx::CommandNode *>(arg.node.get()))
+        if (!arg.node->asCommand())
         {
             arg.start.raiseErrorHere("Identifier expected.");
         }
     }
 
-    return std::make_shared<FunctionRunner>(argsGroupRef, localsRef, bodyRef);
+    return std::make_shared<FunctionRunner>(argsGroup, locals, body);
 }
 
 struct LambdaCommand : pfx::Command
