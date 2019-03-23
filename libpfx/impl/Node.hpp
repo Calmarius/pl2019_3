@@ -97,6 +97,26 @@ public:
      * @return The type of the node.
      */
     virtual NodeType getType() const = 0;
+
+    /**
+     * @returns the current node downcast as group node. Empty reference is
+     * returns if the node is not a group node. You can use the ! operator to
+     * determine that.
+     */
+    GroupRef asGroup()
+    {
+        return std::dynamic_pointer_cast<GroupNode>(shared_from_this());
+    }
+
+    /**
+     * @returns the current node downcast as a command node. Empty reference is
+     * returned if the node is not a group node. You can use the ! operator to
+     * determine that.
+     */
+    CommandRef asCommand()
+    {
+        return std::dynamic_pointer_cast<CommandNode>(shared_from_this());
+    }
 };
 
 /// This node represents an immutable integer value.
