@@ -1,4 +1,6 @@
-
+/**
+ * STANDARD HEADERS
+ */
 #include <stdarg.h>
 #include <string.h>
 
@@ -9,6 +11,11 @@
 #include <stack>
 #include <map>
 #include <stdexcept>
+
+/**
+ * MY HEADERS
+ */
+#include "declarations.hpp"
 
 #include "utility.hpp"
 
@@ -23,6 +30,10 @@
 #include "Context.hpp"
 #include "Node.hpp"
 
+
+/**
+ * MY SOURCES
+ */
 #include "utility.cpp"
 
 #include "Input.cpp"

@@ -51,7 +51,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         if (token.quoted)
         {
             // Quoted strings always create a string node.
-            std::shared_ptr<Node> newNode =
+            NodeRef newNode =
                 std::make_shared<StringNode>(token.word);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
@@ -61,7 +61,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         if (*endptr == '\0')
         {
             // The whole word parsed as int.
-            std::shared_ptr<Node> newNode =
+            NodeRef newNode =
                 std::make_shared<IntegerNode>(intValue);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
@@ -71,7 +71,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         if (*endptr == '\0')
         {
             // The whole word parsed as double.
-            std::shared_ptr<Node> newNode =
+            NodeRef newNode =
                 std::make_shared<FloatNode>(floatValue);
             currentGroup->nodes.push_back(NodeInfo(newNode, token));
             continue;
@@ -102,7 +102,7 @@ std::shared_ptr<GroupNode> Context::compileCode(Input &input)
         // The default case is that the word is a command.
         auto cmd = commands.find(token.word);
 
-        std::shared_ptr<Node> newNode;
+        NodeRef newNode;
         if (cmd == commands.end())
         {
             // Unregistered commands will get the UndefinedCommand handler

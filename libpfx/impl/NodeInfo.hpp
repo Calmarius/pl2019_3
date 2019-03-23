@@ -18,14 +18,14 @@ struct NodeInfo
     Position end = Position();
 
     /// The reference to the pointed node.
-    std::shared_ptr<Node> node;
+    NodeRef node;
 
     /**
      * Simple constructor for nodes that created on the fly.
      *
      * @param [in] n The node to contain.
      */
-    NodeInfo(std::shared_ptr<Node> n) : node(std::move(n))
+    NodeInfo(NodeRef n) : node(std::move(n))
     {
     }
 
@@ -35,7 +35,7 @@ struct NodeInfo
      * @param [in] n The node to contain.
      * @param [in] t The token.
      */
-    NodeInfo(std::shared_ptr<Node> n, const Token &t)
+    NodeInfo(NodeRef n, const Token &t)
         : start(t.start), end(t.end), node(std::move(n))
     {
     }

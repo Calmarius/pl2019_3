@@ -2,11 +2,6 @@
 
 namespace pfx
 {
-class Node;
-class ArgIterator;
-class Command;
-/// Shorthand for the Command reference.
-using CommandCallbackRef = std::shared_ptr<Command>;
 
 /// Represents a command to be evaluated in a command node.
 struct Command
@@ -19,7 +14,7 @@ struct Command
      *
      * @return The result of the evaluation.
      */
-    virtual std::shared_ptr<Node> execute(ArgIterator &iterator) = 0;
+    virtual NodeRef execute(ArgIterator &iterator) = 0;
     /// Virtual destructor for polymorphism.
     virtual ~Command()
     {

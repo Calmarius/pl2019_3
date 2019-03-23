@@ -43,18 +43,18 @@ std::string GroupNode::toString() const
 }
 
 
-std::shared_ptr<Node> NullNode::instance = std::make_shared<NullNode>();
+NodeRef NullNode::instance = std::make_shared<NullNode>();
 
 
-std::shared_ptr<Node> CommandNode::evaluate(ArgIterator &hIter) const
+NodeRef CommandNode::evaluate(ArgIterator &hIter) const
 {
     return command->execute(hIter);
 }
 
 
-std::shared_ptr<Node> GroupNode::evaluate(ArgIterator &) const
+NodeRef GroupNode::evaluate(ArgIterator &) const
 {
-    std::shared_ptr<Node> resultNode = NullNode::instance;
+    NodeRef resultNode = NullNode::instance;
 
     /* Evaluate each node, but pass the iterator to the nodes just in case
      they would like to fetch more nodes.*/

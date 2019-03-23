@@ -1,6 +1,6 @@
 namespace pfx
 {
-std::shared_ptr<Node> ArgIterator::fetchNext()
+NodeRef ArgIterator::fetchNext()
 {
     if (current == end)
     {
@@ -11,7 +11,7 @@ std::shared_ptr<Node> ArgIterator::fetchNext()
     return tmp.node;
 }
 
-std::shared_ptr<Node> ArgIterator::evaluateNext()
+NodeRef ArgIterator::evaluateNext()
 {
     return fetchNext()->evaluate(*this);
 }
@@ -27,7 +27,7 @@ Position ArgIterator::getPosition()
     return current->start;
 }
 
-std::shared_ptr<Node> ArgIterator::next()
+NodeRef ArgIterator::next()
 {
     if (current == end)
     {

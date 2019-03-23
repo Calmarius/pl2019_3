@@ -47,7 +47,7 @@ public:
      * @return Reference to the next node. If the iterator is at the end it
      * returns a pointer to a NullNode.
      */
-    std::shared_ptr<Node> next();
+    NodeRef next();
 
     /**
      * Evaluates the next node.
@@ -59,7 +59,7 @@ public:
      * The evaluation may cause more nodes to be read if the node is a
      * CommandNode.
      */
-    std::shared_ptr<Node> evaluateNext();
+    NodeRef evaluateNext();
 
     /**
      * Reads the next node then moves the iterator forward.
@@ -71,7 +71,7 @@ public:
      * Compared to the evaluateNext, this function doesn't evaluate the
      * next node. Just reads the node without evaluation.
      */
-    std::shared_ptr<Node> fetchNext();
+    NodeRef fetchNext();
 
     /**
      * @return True if the iterator is reached the the end, false otherwise.

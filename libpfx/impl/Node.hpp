@@ -2,18 +2,6 @@
 
 namespace pfx
 {
-struct Node;
-struct GroupNode;
-struct CommandNode;
-/// Shorthand for the node references.
-using NodeRef = std::shared_ptr<Node>;
-
-/// Type for command node references
-using CommandRef = std::shared_ptr<CommandNode>;
-
-/// Type for group node references.
-using GroupRef = std::shared_ptr<GroupNode>;
-
 /// Defines a node, the basic building block of the language.
 class Node : public std::enable_shared_from_this<Node>
 {
@@ -63,7 +51,7 @@ public:
      * When called on a node that do uses an iterator. The iterator will return
      * references to NullNode.
      */
-    std::shared_ptr<Node> evaluate() const
+    NodeRef evaluate() const
     {
         ArgIterator tmp;
         return evaluate(tmp);
@@ -80,7 +68,7 @@ public:
      * @remarks
      *  The default behavior is returning itself.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &iterator) const
+    virtual NodeRef evaluate(ArgIterator &iterator) const
     {
         (void)iterator;
         return std::const_pointer_cast<Node>(shared_from_this());
@@ -281,7 +269,7 @@ struct CommandNode : Node
      *
      * @return The result of the command.
      */
-    std::shared_ptr<Node> evaluate(ArgIterator &iterator) const override;
+    NodeRef evaluate(ArgIterator &iterator) const override;
 
     /// @return NodeType::Command
     NodeType getType() const override
@@ -379,7 +367,7 @@ struct GroupNode : Node
      * evaluated. So they can recursively fetch or evaluate their other
      * arguments.
      */
-    std::shared_ptr<Node> evaluate(ArgIterator &) const override;
+    NodeRef evaluate(ArgIterator &) const override;
 
     /**
      * Evaluate all nodes in the group.
@@ -426,7 +414,7 @@ struct NullNode : Node
     }
 
     /// Singleton instance so you don't need to create these.
-    static std::shared_ptr<Node> instance;
+    static NodeRef instance;
 
     void dump(int /*indent*/) const override
     {
