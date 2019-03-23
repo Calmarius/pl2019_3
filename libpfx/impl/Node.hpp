@@ -402,6 +402,14 @@ struct GroupNode : Node
     std::shared_ptr<GroupNode> evaluateAll() const;
 
     /**
+     * @return The iterator for child node evaluation and iteration.
+     */
+    ArgIterator getIterator()
+    {
+        return ArgIterator(nodes.begin(), nodes.end());
+    }
+
+    /**
      * @return NodeType::Group;
      */
     virtual NodeType getType() const

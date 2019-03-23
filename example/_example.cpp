@@ -346,7 +346,8 @@ struct MapCommand : pfx::Command
 
         pfx::GroupRef newGroup = pfx::createGroup();
 
-        pfx::ArgIterator groupIter(groupNode->nodes.begin(), groupNode->nodes.end());
+        pfx::ArgIterator groupIter = groupNode->getIterator();
+
         while (!groupIter.ended())
         {
             newGroup->nodes.push_back(mapNode->evaluate(groupIter));
