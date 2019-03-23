@@ -3,8 +3,16 @@
 namespace pfx
 {
 struct Node;
+struct GroupNode;
+struct CommandNode;
 /// Shorthand for the node references.
 using NodeRef = std::shared_ptr<Node>;
+
+/// Type for command node references
+using CommandRef = std::shared_ptr<CommandNode>;
+
+/// Type for group node references.
+using GroupRef = std::shared_ptr<GroupNode>;
 
 /// Defines a node, the basic building block of the language.
 class Node : public std::enable_shared_from_this<Node>
@@ -72,8 +80,9 @@ public:
      * @remarks
      *  The default behavior is returning itself.
      */
-    virtual std::shared_ptr<Node> evaluate(ArgIterator &) const
+    virtual std::shared_ptr<Node> evaluate(ArgIterator &iterator) const
     {
+        (void)iterator;
         return std::const_pointer_cast<Node>(shared_from_this());
     }
 
@@ -430,5 +439,63 @@ struct NullNode : Node
         return NodeType::Null;
     };
 };
+
+/**
+ * creates an integer node.
+ *
+ * @param [in] value The value the node represents.
+ *
+ * @return The node.
+ */
+inline NodeRef createInteger(int value)
+{
+    return std::make_shared<IntegerNode>(value);
+}
+
+/**
+ * creates a float node.
+ *
+ * @param [in] value The value the node represents.
+ *
+ * @return The node.
+ */
+inline NodeRef createFloat(double value)
+{
+    return std::make_shared<FloatNode>(value);
+}
+
+/**
+ * creates a string node.
+ *
+ * @param [in] value The value the node represents.
+ *
+ * @return The node.
+ */
+inline NodeRef createString(std::string value)
+{
+    return std::make_shared<StringNode>(value);
+}
+
+/**
+ * creates a group node.
+ *
+ * @return The node.
+ */
+inline GroupRef createGroup()
+{
+    return std::make_shared<GroupNode>();
+}
+
+/**
+ * creates a command node.
+ *
+ * @param [in] command The command callback it represents.
+ *
+ * @return The node.
+ */
+inline CommandRef createCommand(CommandCallbackRef command)
+{
+    return std::make_shared<CommandNode>(command);
+}
 
 } // namespace pfx

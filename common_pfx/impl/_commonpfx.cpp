@@ -93,8 +93,8 @@ struct FunctionRunner : pfx::Command
 
     pfx::NodeRef execute(pfx::ArgIterator &iter) override
     {
-        std::vector<pfx::CommandRef> savedVariables;
-        std::vector<pfx::CommandRef> savedLocals;
+        std::vector<pfx::CommandCallbackRef> savedVariables;
+        std::vector<pfx::CommandCallbackRef> savedLocals;
         std::vector<pfx::NodeRef> args;
 
         int nParams = parameters.size();
@@ -419,7 +419,6 @@ void applyCommonPfx(pfx::Context &ctx)
 
 } // namespace cpfx
 
-#define UNITTEST
 #ifdef UNITTEST
 
 #undef NDEBUG

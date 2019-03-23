@@ -5,8 +5,8 @@ namespace pfx
 /// Keeps track of the character position while reading characters.
 class Input
 {
-public:
-    // Can be a file stream, string stream or whatever.
+private:
+    /// Can be a file stream, string stream or whatever.
     std::unique_ptr<std::istream> inputStream;
 
     const char *fn; // Filename is just stored to know what to report.

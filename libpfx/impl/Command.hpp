@@ -6,7 +6,7 @@ class Node;
 class ArgIterator;
 class Command;
 /// Shorthand for the Command reference.
-using CommandRef = std::shared_ptr<Command>;
+using CommandCallbackRef = std::shared_ptr<Command>;
 
 /// Represents a command to be evaluated in a command node.
 struct Command

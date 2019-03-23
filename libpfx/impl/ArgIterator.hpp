@@ -14,9 +14,10 @@ private:
 
     static IteratorType dummy;
 
-public:
     IteratorType current;
     IteratorType end;
+
+public:
     /**
      * Default constructor creates a dummy iterator. That's immediately on the
      * end and returns null nodes.
