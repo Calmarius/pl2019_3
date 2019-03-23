@@ -11,15 +11,15 @@ $(LIBNAME) : $(SRCS) $(PFX_LIB)
 	$(AR) rcs $(LIBNAME) _.o
 	rm *.o
 
-$(PFX_LIB):
+$(PFX_LIB): always_build
 	$(MAKE) -C $(PFX_DIR)
 
 clean:
 	rm -f $(LIBNAME)
 
 test: $(PFX_LIB)
-	$(CXX) $(CXXFLAGS) -DUNITTEST impl/_commonpfx.cpp $(PFX_LIB) -o test
+	$(CXX) $(CXXFLAGS) -DUNITTEST impl/_commonpfx.cpp -o test
 	./test
 	rm test
 
-.PHONY: $(PFX_LIB) clean test
+.PHONY: clean test always_build

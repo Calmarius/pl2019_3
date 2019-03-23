@@ -15,13 +15,13 @@ all: sample
 clean:
 	rm -f sample
 
-$(PFX_LIB):
+$(PFX_LIB): always_build
 	$(MAKE) -C $(PFX_DIR)
 
-$(CPFX_LIB):
+$(CPFX_LIB): always_build
 	$(MAKE) -C $(CPFX_DIR)
 
 sample: $(SRCS) $(PFX_LIB) $(CPFX_LIB)
 	$(CXX) $(CXXFLAGS) _example.cpp -iquote$(PFX_INCLUDE) -iquote$(CPFX_INCLUDE) $(PFX_LIB) $(CPFX_LIB) -o $@
 
-.PHONY: all clean $(PFX_LIB) $(CPFX_LIB)
+.PHONY: all clean always_build
