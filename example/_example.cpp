@@ -1,11 +1,17 @@
 #include "pfx.hpp"
 #include "common_pfx.hpp"
-#include "math.h"
+#include <cmath>
 
-#include <stdio.h>
+#include <cstdio>
 #include <memory>
 #include <typeinfo>
 #include <vector>
+
+template <class... Args> int printF(const char *fmt, Args &&... args)
+{
+    // Screw clang-tidy, how I'm going to call printf from now?
+    return printf(fmt, args...); // NOLINT
+}
 
 struct PrintCommand : pfx::Command
 {
@@ -13,7 +19,7 @@ struct PrintCommand : pfx::Command
     {
         auto node = iter.evaluateNext();
 
-        printf("%s", node->toString().c_str());
+        printF("%s", node->toString().c_str());
 
         return pfx::NullNode::instance;
     }
@@ -25,7 +31,7 @@ struct PrintLnCommand : pfx::Command
     {
         auto node = iter.evaluateNext();
 
-        printf("%s\n", node->toString().c_str());
+        printF("%s\n", node->toString().c_str());
 
         return pfx::NullNode::instance;
     }
@@ -335,7 +341,7 @@ struct MapCommand : pfx::Command
 
         while (!groupIter.ended())
         {
-            newGroup->nodes.push_back(mapNode->evaluate(groupIter));
+            newGroup->nodes.emplace_back(mapNode->evaluate(groupIter));
         }
 
         return newGroup;
@@ -381,7 +387,7 @@ int main()
     }
     catch (pfx::Error e)
     {
-        printf("Error: %s\n", e.toString().c_str());
+        printF("Error: %s\n", e.toString().c_str());
         return 1;
     }
 }

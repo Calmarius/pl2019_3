@@ -10,7 +10,7 @@ struct ContainerCommand : pfx::Command
     {
     }
 
-    ContainerCommand(pfx::NodeRef ref) : ref(ref)
+    ContainerCommand(pfx::NodeRef ref) : ref(std::move(ref))
     {
     }
 
@@ -22,15 +22,14 @@ struct ContainerCommand : pfx::Command
 
 void let(pfx::CommandNode &cmd, pfx::NodeRef value)
 {
-    ContainerCommand *varContainer =
-        dynamic_cast<ContainerCommand *>(cmd.command.get());
+    auto *varContainer = dynamic_cast<ContainerCommand *>(cmd.command.get());
     if (!varContainer)
     {
         auto tmp = std::make_shared<ContainerCommand>();
         cmd.command = tmp;
         varContainer = tmp.get();
     }
-    varContainer->ref = value;
+    varContainer->ref = std::move(value);
 }
 
 struct LetCommand : pfx::Command
@@ -72,9 +71,9 @@ struct FunctionRunner : pfx::Command
     std::vector<pfx::CommandRef> locals;
     pfx::GroupRef body;
 
-    FunctionRunner(pfx::GroupRef parameters, pfx::GroupRef locals,
+    FunctionRunner(const pfx::GroupRef &parameters, const pfx::GroupRef &locals,
                    pfx::GroupRef body)
-        : body(body)
+        : body(std::move(body))
     {
         for (auto x : parameters->nodes)
         {

@@ -7,6 +7,11 @@ all:
 	$(MAKE) -C test
 	$(MAKE) -C docs
 
+lint:
+	$(MAKE) -C libpfx lint
+	$(MAKE) -C common_pfx lint
+	$(MAKE) -C example lint
+
 
 clean:
 	$(MAKE) -C libpfx clean

@@ -24,4 +24,7 @@ $(CPFX_LIB): always_build
 sample: $(SRCS) $(PFX_LIB) $(CPFX_LIB)
 	$(CXX) $(CXXFLAGS) _example.cpp -iquote$(PFX_INCLUDE) -iquote$(CPFX_INCLUDE) $(PFX_LIB) $(CPFX_LIB) -o $@
 
+lint:
+	clang-tidy _example.cpp -checks=-*,cppcoreguidelines-*,modernize-*,performance-* -- -iquote$(PFX_INCLUDE) -iquote$(CPFX_INCLUDE)
+
 .PHONY: all clean always_build

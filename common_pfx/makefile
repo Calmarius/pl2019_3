@@ -17,6 +17,9 @@ $(PFX_LIB): always_build
 clean:
 	rm -f $(LIBNAME)
 
+lint:
+	clang-tidy impl/_commonpfx.cpp -checks=-*,cppcoreguidelines-*,modernize-*,performance-*
+
 test: $(PFX_LIB)
 	$(CXX) $(CXXFLAGS) -DUNITTEST impl/_commonpfx.cpp -o test
 	./test
